@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">FieldtripGB</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_my_location">My Location</string>
+    <string name="action_start_tracking">Start Tracking</string>
+    <string name="action_stop_tracking">Stop Tracking</string>
+    <string name="action_search">Search</string>
+    <string name="action_create_record">Create Record</string>
+    <string name="action_settings">Settings</string>
+</resources>
