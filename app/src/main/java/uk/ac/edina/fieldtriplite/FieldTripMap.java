@@ -25,22 +25,17 @@ public class FieldTripMap extends AppCompatActivity
 
     private static final String LOG_TAG = "FieldtripMap Activity" ;
     WebView webView = null ;
+    WebViewLocationAPI locationAPI = null ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-       // setContentView(R.layout.activity_field_trip_map);
-
-
-        //this.webView = new WebView(this) ;
-        //this.locationAPI = new WebViewLocationAPI(this.webView);
-
-      //  wv1.loadDataWithBaseURL(null, "HTML String", mimeType, encoding, null);
-
-       // setContentView(this.webView);
         setContentView(R.layout.activity_field_trip_map);
         this.webView  = (WebView)findViewById(R.id.web);
+        this.locationAPI = new WebViewLocationAPI(this.webView);
+
+
         WebSettings webSettings = this.webView.getSettings() ;
         webSettings.setJavaScriptEnabled(true);
         webSettings.setAllowContentAccess(true);
@@ -48,13 +43,24 @@ public class FieldTripMap extends AppCompatActivity
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadsImagesAutomatically(true);
 
-        //this.webView.addJavascriptInterface(this.locationAPI, "AndroidLocationAPI");
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             this.webView.setWebContentsDebuggingEnabled(true);
         }
 
+
+        /*
+        *  set the Javascript interface to the instance of WebViewLcoationAPI and set the
+        *  name for this intefeace used in the WebView to "NativeLocationAPI"
+        *  so in the Javascript you can call the method requestLocationFix() in WebViewLocationAPI class
+        *  with NativeLocationAPI.onLocationFix()
+        *
+        */
+
+        this.webView.addJavascriptInterface(this.locationAPI, "NativeLocationAPI");
+
+        // we only want to start usimg native location API once the map html has loaded
+        // otherwise we will end up calling Javascript callbacks before the JS is loaded into webview
+        // the web view client allows us to capture the onPageFinished event where we can kick off location requests
         this.webView.setWebViewClient(new WebViewClient() {
             @Override
 
@@ -63,9 +69,10 @@ public class FieldTripMap extends AppCompatActivity
                 if("file:///android_asset/html/map.html".equals(url))
                 {
                     Log.d(LOG_TAG, " LOADED map.html") ;
-                    //locationAPI.setCallbackScriptLoaded(true);
-                    //locationAPI.requestLocationFix(3);
+                    locationAPI.setCallbackScriptLoaded(true);
                     // request 3 updates initially to get more accurate initial fix
+                    locationAPI.requestLocationFix(3);
+
 
                 }
                 else
@@ -75,8 +82,8 @@ public class FieldTripMap extends AppCompatActivity
 
             }
         });
-
-
+        // load the html page (and linked JS files) asynchronously
+        // the onPageFinished callback above get called when the oage is loaded into the WebView
         this.webView.post(new Runnable() {
             @Override
             public void run() {
