@@ -21,12 +21,19 @@
 L.mapbox.accessToken = 'pk.eyJ1IjoiYmJ1dGNoYXIiLCJhIjoiUG8tTl94ZyJ9.Dnn7UPaGyAaeinDJJGAcLw';
 
 
- var map = L.mapbox.map('map', 'bbutchar.m7pbgjbh')
-    .setView([55.955, -3.181], 16);
+ // var map = L.mapbox.map('map', 'bbutchar.m7pbgjbh')
+ //   .setView([55.955, -3.181], 16);
 
 
+var map = new L.Map('map', {
+  center: new L.LatLng(55.955, -3.181),
+  zoom: 15
+});
+var tileUrl = 'https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png'
+var layer = new L.TileLayer(tileUrl, {maxZoom: 18});
 
-
+// add the layer to the map
+map.addLayer(layer);
 
 
 var trackLayer = L.geoJson().addTo(map);
@@ -43,7 +50,7 @@ var marker = L.marker([53.3956, -2.9783], {icon: myIcon}).addTo(map);
 function onLocationFix(latlonStr){
 
     var latlonObj = JSON.parse(latlonStr);
-    var latlng = L.latLng(latlonObj.geometry.coordinates[0], latlonObj.geometry.coordinates[1]);
+    var latlng = L.latLng(latlonObj.geometry.coordinates[1], latlonObj.geometry.coordinates[0]);
     marker.setLatLng(latlng) ;
     map.panTo(latlng);
 

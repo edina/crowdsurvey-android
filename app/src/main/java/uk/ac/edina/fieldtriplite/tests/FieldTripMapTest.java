@@ -8,6 +8,8 @@ import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.util.Log;
 import android.view.InputEvent;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -16,6 +18,7 @@ import android.webkit.WebViewClient;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Enumeration;
 
 import uk.ac.edina.fieldtriplite.R ;
 
@@ -34,6 +37,13 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
     private int countTilesLoaded = 0 ;
     private boolean pageLoaded = false ;
     private final MockWebViewClient mockWebViewClient = new MockWebViewClient();
+
+    private enum CallbackStatus {
+        OK,
+        FAILED
+    };
+
+    private CallbackStatus callbackStatus = CallbackStatus.OK ;
 
     public FieldTripMapTest() {
         super(FieldTripMap.class);
@@ -55,7 +65,6 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
         assertNotNull("mWebView is not null", mWebView);
 
     }
-
 
 
            public void testPreconditions() {
@@ -156,16 +165,34 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
             String locationJSON = LocationUtils.getLocationAsGeoJSONPoint(location);
             String loadUrl = "javascript:onLocationFix('" + locationJSON + "');";
 
-            // call onLocationFix Javascript function on the webview using mockWebViewClient which will count map
-            // tiles. For reasons I don't understand the tiles are reloaded when the function is called.
-            // if the function isn't callable the map tiles don't get laoded
-            getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView,mockWebViewClient, loadUrl) ) ;
+            // use webchromclient to capture console message that occurs
+            // if onLocationFix method is not defined
+            getInstrumentation().runOnMainSync(new Runnable() {
+                @Override
+                public void run() {
+                    mWebView.setWebChromeClient(new WebChromeClient() {
+                        @Override
+                        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                            if(consoleMessage.message().contains("onLocationFix") )
+                            {
+                                callbackStatus = CallbackStatus.FAILED ;
+                            }
+                            Log.e("FieldTripMapTest", "onConsoleMessage:" + consoleMessage.message());
+                            return true ;
+                        }
+                    });
+                }
+            });
+
+
+            // call onLocationFix Javascript function on the webview using mockWebViewClient
+            getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient, loadUrl));
+
 
             // give a moment for tiles to laod
-            sleep(3500);
+            sleep(3000);
             Log.e("FieldTripMapTest", " testOnLocationFixCallback:" + pageLoaded + " countTileLoaded:" + countTilesLoaded) ;
-            assertEquals("Expect 6 map tiles loaded", 6 ,countTilesLoaded) ;
-
+            assertTrue("Test Callback status OK", callbackStatus == CallbackStatus.OK) ;
 
         }
 
@@ -258,14 +285,23 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
                     // reload the page
 
                     Log.e("FieldTripMapTest", "WebViewPageReload:relaod()");
+                    mWebView.clearCache(true);
                     mWebView.reload();
+
                 }
                 else
                 {
                     // load specific page component e.g. JS function
                     Log.e("FieldTripMapTest", "WebViewPageReload:" + loadUrl);
+                     try {
+                         //mWebView.clearCache(true);
+                         mWebView.loadUrl(this.loadUrl);
+                     }catch(Error err)
+                     {
+                         Log.e("FieldTripMapTest", "WebViewPageReload:error " + err );
 
-                    mWebView.loadUrl(this.loadUrl);
+                     }
+
                 }
             }
     }
