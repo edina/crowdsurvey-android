@@ -33,7 +33,7 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
     private WebView mWebView;
     private int countTilesLoaded = 0 ;
     private boolean pageLoaded = false ;
-    private MockWebViewClient mockWebViewClient ;
+    private final MockWebViewClient mockWebViewClient = new MockWebViewClient();
 
     public FieldTripMapTest() {
         super(FieldTripMap.class);
@@ -54,33 +54,24 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
         assertNotNull("mFieldTripMapActivity is not null", mFieldTripMapActivity);
         assertNotNull("mWebView is not null", mWebView);
 
-
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-
-                mockWebViewClient = new MockWebViewClient();
-                // set mock WebViewClient to handle callback requests
-                mWebView.setWebViewClient(mockWebViewClient);
-            }
-        });
-
-            // give it some time for map to load
-            sleep(6000);
     }
 
 
 
-
            public void testPreconditions() {
-               //Try to add a message to add context to your assertions. These messages will be shown if
-               //a tests fails and make it easy to understand why a test failed
                assertNotNull("mFieldTripMapActivity is not null", mFieldTripMapActivity);
                assertNotNull("mWebView is not null", mWebView);
 
            }
 
          public void testInitialMapLoaded() {
+
+             // relaod web page using mock web view client
+             // the mock webview client will enable us to capture onReceoveError event if something goes wrong
+
+             getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient)) ;
+             // give the page a couple of seconds to load
+             sleep(3000) ;
 
              Log.e("FieldTripMapTest", "testInitialMapLoaded pageLoaded:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
              assertFalse("error occured loading map", mockWebViewClient.mError);
@@ -89,42 +80,49 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
 
         public void testCallbackScriptLoadedSet() {
 
+
             Field locationApiField = null;
-            Method isCallbackScriptLoaded = null ;
+            Field webViewClientField = null ;
+
             try {
                 locationApiField = FieldTripMap.class.
                         getDeclaredField("locationAPI");
 
-                isCallbackScriptLoaded = WebViewLocationAPI.class.getDeclaredMethod("isCallbackScriptLoaded", null)  ;
+                webViewClientField = FieldTripMap.class.
+                        getDeclaredField("webViewClient");
+
 
             } catch (NoSuchFieldException e) {
-                fail("Could not access private field locationAPI " + e);
-            } catch (NoSuchMethodException e) {
-                fail("Could not access private field locationAPI" + e);
-
+                fail("Java reflect Could not access private field " + e);
             }
 
             locationApiField.setAccessible(true);
-            isCallbackScriptLoaded.setAccessible(true) ;
+            webViewClientField.setAccessible(true);
             WebViewLocationAPI locationAPI ;
+            WebViewClient webViewClient ;
 
-            boolean isLoaded = false ;
 
             try {
+                // get the reference to lcoationAPI
                 locationAPI = (WebViewLocationAPI) locationApiField.get(mFieldTripMapActivity);
-                 assertNotNull(locationAPI);
-                 isLoaded = (boolean) isCallbackScriptLoaded.invoke(locationAPI,null) ;
-
+                assertNotNull(locationAPI);
+                // get the activity web view client
+                webViewClient = (WebViewClient) webViewClientField.get(mFieldTripMapActivity);
+                assertNotNull(webViewClient);
             } catch (IllegalAccessException e) {
-                locationAPI = null ;
-                fail("could not reflect locationAPI member variable on object mFieldTripMapActivity : " +  e ) ;
-            } catch (InvocationTargetException e) {
-                locationAPI = null ;
-                fail("could not reflect locationAPI method  on object mFieldTripMapActivity : " +  e ) ;
+                locationAPI = null;
+                webViewClient = null ;
+                fail("could not reflect locationAPI member variable on object mFieldTripMapActivity : " + e);
             }
 
+            //  as we want to test a variable set by the actual webview client we need to reload
+            // the page and use the FieldtripMap webViewClient rather than a mock as this will set
+            // the variable in the pageFinished ccallback
+            getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, webViewClient)) ;
 
-            assertTrue("callbackScriptLoded flag was set", isLoaded ) ;
+            // give the page a couple of seconds to load
+            sleep(3000) ;
+            assertTrue("callbackScriptLoded flag was set by WebViewClient", locationAPI.isCallbackScriptLoaded() ) ;
 
         }
 
@@ -133,22 +131,16 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
 
             Log.e("FieldTripMapTest", " testMApTileLoaded pageLoaded:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
             pageLoaded = false ;
+            countTilesLoaded = 0 ;
+            // reload page with MockWebViewClient to capture any onReceiveError callback
 
-            getInstrumentation().runOnMainSync(new Runnable() {
-                @Override
-                public void run() {
-
-                    Location location = LocationUtils.createLocation(55.954364f, -3.186198f, 1.0f);
-                    String locationJSON = LocationUtils.getLocationAsGeoJSONPoint(location);
-                    mWebView.reload();
-
-                }
-            });
-
+            getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient)) ;
+           // give some time
             sleep(2000);
             Log.e("FieldTripMapTest", " testMApTileLoaded pageLoaded:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
             assertTrue("page reloaded", pageLoaded);
             assertFalse("error occured loading map", mockWebViewClient.mError);
+            // assertEquals("Expect map tiles loaded", 6, countTilesLoaded) ;
 
 
         }
@@ -159,20 +151,20 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
             Log.e("FieldTripMapTest", " testOnLocationFixCallback:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
 
             countTilesLoaded = 0;
-            getInstrumentation().runOnMainSync(new Runnable() {
-                @Override
-                public void run() {
 
-                    Location location = LocationUtils.createLocation(50.34f, 2.3f, 1.0f);
-                    String locationJSON = LocationUtils.getLocationAsGeoJSONPoint(location);
-                    mWebView.loadUrl("javascript:onLocationFix('" + locationJSON + "');");
+            Location location = LocationUtils.createLocation(50.34f, 2.3f, 1.0f);
+            String locationJSON = LocationUtils.getLocationAsGeoJSONPoint(location);
+            String loadUrl = "javascript:onLocationFix('" + locationJSON + "');";
 
-                }
-            });
+            // call onLocationFix Javascript function on the webview using mockWebViewClient which will count map
+            // tiles. For reasons I don't understand the tiles are reloaded when the function is called.
+            // if the function isn't callable the map tiles don't get laoded
+            getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView,mockWebViewClient, loadUrl) ) ;
 
-            sleep(2000);
+            // give a moment for tiles to laod
+            sleep(3500);
             Log.e("FieldTripMapTest", " testOnLocationFixCallback:" + pageLoaded + " countTileLoaded:" + countTilesLoaded) ;
-            assertEquals("Expect map tiles loaded", 6 ,countTilesLoaded) ;
+            assertEquals("Expect 6 map tiles loaded", 6 ,countTilesLoaded) ;
 
 
         }
@@ -237,4 +229,45 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
                }
            }
 
-       }
+
+       private class WebViewPageReload implements Runnable
+       {
+           private WebViewClient webViewClient ;
+           private WebView webView ;
+           private String loadUrl = null ;
+
+           public WebViewPageReload(WebView webView, WebViewClient webViewClient)
+           {
+                this.webView = webView ;
+                this.webViewClient = webViewClient ;
+
+           }
+
+           public WebViewPageReload(WebView webView, WebViewClient webViewClient, String loadUrl)
+           {
+               this.webView = webView ;
+               this.webViewClient = webViewClient ;
+               this.loadUrl = loadUrl ;
+
+           }
+
+            @Override
+            public void run () {
+                 mWebView.setWebViewClient(webViewClient);
+                if(this.loadUrl == null ) {
+                    // reload the page
+
+                    Log.e("FieldTripMapTest", "WebViewPageReload:relaod()");
+                    mWebView.reload();
+                }
+                else
+                {
+                    // load specific page component e.g. JS function
+                    Log.e("FieldTripMapTest", "WebViewPageReload:" + loadUrl);
+
+                    mWebView.loadUrl(this.loadUrl);
+                }
+            }
+    }
+
+}

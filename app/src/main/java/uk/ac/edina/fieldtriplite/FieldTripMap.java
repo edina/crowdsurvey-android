@@ -26,6 +26,7 @@ public class FieldTripMap extends AppCompatActivity
     private static final String LOG_TAG = "FieldtripMap Activity" ;
     WebView webView = null ;
     WebViewLocationAPI locationAPI = null ;
+    private WebViewClient webViewClient = null ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +59,11 @@ public class FieldTripMap extends AppCompatActivity
 
         this.webView.addJavascriptInterface(this.locationAPI, "NativeLocationAPI");
 
+
         // we only want to start usimg native location API once the map html has loaded
         // otherwise we will end up calling Javascript callbacks before the JS is loaded into webview
         // the web view client allows us to capture the onPageFinished event where we can kick off location requests
-        this.webView.setWebViewClient(new WebViewClient() {
+        this.webViewClient =    new WebViewClient() {
             @Override
 
             public void onPageFinished(WebView view, String url) {
@@ -82,7 +84,10 @@ public class FieldTripMap extends AppCompatActivity
                 }
 
             }
-        });
+        };
+
+        this.webView.setWebViewClient(this.webViewClient) ;
+
         // load the html page (and linked JS files) asynchronously
         // the onPageFinished callback above get called when the oage is loaded into the WebView
         this.webView.post(new Runnable() {
@@ -91,7 +96,6 @@ public class FieldTripMap extends AppCompatActivity
                 webView.loadUrl("file:///android_asset/html/map.html");
             }
         });
-
 
         // setup toolbar, floating action button drawer and navigation view
        viewInit();
