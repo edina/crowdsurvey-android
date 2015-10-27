@@ -9,7 +9,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
@@ -17,10 +20,9 @@ import java.util.ArrayList;
 /**
  * Created by benbutchart on 21/10/15.
  */
-public class LocationServicesClient {
 
 
-    public class LocationClient implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    public class LocationServicesClient implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
         private GoogleApiClient apiClient ;
@@ -32,10 +34,10 @@ public class LocationServicesClient {
 
         LocationFixListener fixListener ;
         LocationUpdateListener updateListener ;
-        TrackUpdateReceiver trackUpdateReceiver ;
-        GeofenceLivenessReceiver geofenceLivenessReceiver ;
 
-        public LocationClient(Context appContext, WebViewLocationAPI locationAPI) {
+
+
+        public LocationServicesClient(Context appContext, WebViewLocationAPI locationAPI) {
 
 
             this.apiClient = new GoogleApiClient.Builder(appContext)
@@ -47,20 +49,34 @@ public class LocationServicesClient {
             this.locationAPI = locationAPI ;
             this.fixListener = new LocationFixListener() ;
             this.updateListener = new LocationUpdateListener() ;
-            this.trackUpdateReceiver = new TrackUpdateReceiver() ;
-            this.geofenceLivenessReceiver = new GeofenceLivenessReceiver() ;
+
             this.apiClient.connect();
+        }
+
+
+
+
+        // GoogleAPIClient callback methods
+
+        @Override
+        public void onConnectionSuspended(int i) {
+
+            Log.d(LOG_TAG, "onConnectionSuspended") ;
+        }
+
+        @Override
+        public void onConnectionFailed(ConnectionResult connectionResult) {
+
+            Log.d(LOG_TAG, "onConnectionFailed") ;
         }
 
         @Override
         public void onConnected(Bundle bundle) {
 
-
-
             // we've connected to GoogleApiClient so can now use FusedLocationAPI
-            // initial location fix request
             Log.d(LOG_TAG, "onConnected") ;
 
+            // check if request for continuous loation updates are pending
             if(this.updatesPending)
             {
                 this.requestLocationUpdates(this.updatesPendingInterval);
@@ -69,6 +85,7 @@ public class LocationServicesClient {
                 Log.d(LOG_TAG ," pending location updates requested") ;
             }
 
+            // check
             if(this.locationFixPending)
             {
                 this.requestLocationFix(1);
@@ -76,10 +93,6 @@ public class LocationServicesClient {
                 Log.d(LOG_TAG, " pending location fix requested") ;
             }
 
-            // TODO allow user to control liveliness of geofences
-            // TODO handle system power event and adjust geofence liveness interval
-            // TODO first check if any geofences activated
-            this.requestGeofenceLivenessUpdates(20000);  // 20 seconds
         }
 
 
@@ -128,278 +141,22 @@ public class LocationServicesClient {
             LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this.updateListener) ;
         }
 
-        public void addGeofence(int radius, Location location, String requestId)
-        {
 
-            Geofence.Builder builder = new Geofence.Builder();
-            builder.setCircularRegion(location.getLatitude(), location.getLongitude(), radius )
-                    .setRequestId(requestId)
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT)
-                    .setExpirationDuration(10 * 60 * 1000)
-                    .setLoiteringDelay(6000)
-                    .setNotificationResponsiveness(5000) ;
-
-            Geofence geofence = builder.build() ;
-
-
-            Intent geofenceTransitionIntent = new Intent() ;
-            geofenceTransitionIntent.setAction(LocationUpdateIntentService.ACTION_GEOFENCE_TRANSITION) ;
-            geofenceTransitionIntent.setClass(this.locationAPI.getApplicationContext(),
-                    org.fabeo.benbutchart.webmap.LocationUpdateIntentService.class) ;
-
-
-
-            PendingIntent geofenceIntent = PendingIntent.getService(this.locationAPI.getApplicationContext(), 0,
-                    geofenceTransitionIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-
-            ArrayList<Geofence> geofences = new ArrayList<Geofence>(1) ;
-            geofences.add(geofence) ;
-
-            PendingResult<Status> result =
-                    LocationServices.GeofencingApi.addGeofences(apiClient, geofences, geofenceIntent) ;
-
-
-            result.setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(Status status) {
-
-
-                    if (status.isSuccess()) {
-
-                        Log.d(LOG_TAG, "Geofence added") ;
-                    }
-
-                }
-            });
-
-        }
 
         public void removeGeofence(int id)
         {
             // TODO remove geofence
         }
 
-        public void requestGeofenceLivenessUpdates(int interval)
-        {
 
-            Log.d(LOG_TAG, "requestGeofenceLivenessUpdates") ;
-            LocationRequest backgroundUpdateRequest = LocationRequest.create();
-            backgroundUpdateRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-            // ideally keep interval fairly large 20s plus to avoid excessive drain on battery
-            backgroundUpdateRequest.setInterval(interval) ;
 
-            Intent locationUpdateIntent = new Intent() ;
-            locationUpdateIntent.setAction(LocationUpdateIntentService.ACTION_GEOFENCE_LIVENESS_UPDATE) ;
-            locationUpdateIntent.setClass(this.locationAPI.getApplicationContext(),
-                    org.fabeo.benbutchart.webmap.LocationUpdateIntentService.class) ;
 
-            PendingIntent locationIntent = PendingIntent.getService(this.locationAPI.getApplicationContext(), 0,
-                    locationUpdateIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
 
-            PendingResult<Status> result =
-                    LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, backgroundUpdateRequest, locationIntent);
 
-            result.setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(Status status) {
 
 
-                    if (status.isSuccess()) {
 
-                        Log.d(LOG_TAG, "Geofence liveness requested") ;
-                    }
-
-                }
-            });
-
-
-            registerGeofenceLivenessReceiver();
-
-        }
-
-
-
-        public void stopGeofenceLivenessUpdates()
-        {
-
-
-            Intent locationUpdateIntent = new Intent() ;
-            locationUpdateIntent.setAction(LocationUpdateIntentService.ACTION_GEOFENCE_LIVENESS_UPDATE) ;
-            locationUpdateIntent.setClass(this.locationAPI.getApplicationContext(),
-                    org.fabeo.benbutchart.webmap.LocationUpdateIntentService.class) ;
-
-
-            PendingIntent locationIntent = PendingIntent.getService(this.locationAPI.getApplicationContext(), 0,
-                    locationUpdateIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-            PendingResult<Status> backgroundResult =
-                    LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, locationIntent);
-            locationIntent.cancel();
-
-            backgroundResult.setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(Status status) {
-                    if(status.isSuccess()) {
-                        Log.d(LOG_TAG, " removed tracking updates");
-                    }
-                }
-            }) ;
-
-            unregisterGeofenceLivenessReceiver();
-
-        }
-
-        public void requestTrackUpdates(int interval, String trackid)
-        {
-
-            Log.d(LOG_TAG, "requestTrackUpdates") ;
-            LocationRequest backgroundUpdateRequest = LocationRequest.create();
-            backgroundUpdateRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            backgroundUpdateRequest.setInterval(interval) ;
-
-            Intent locationUpdateIntent = new Intent() ;
-            locationUpdateIntent.setAction(LocationUpdateIntentService.ACTION_LOCATION_UPDATE) ;
-            locationUpdateIntent.setClass(this.locationAPI.getApplicationContext(),
-                    org.fabeo.benbutchart.webmap.LocationUpdateIntentService.class) ;
-            locationUpdateIntent.putExtra("trackid" , trackid) ;
-
-            PendingIntent locationIntent = PendingIntent.getService(this.locationAPI.getApplicationContext(), 0,
-                    locationUpdateIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-
-            PendingResult<Status> result =
-                    LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, backgroundUpdateRequest, locationIntent);
-
-            result.setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(Status status) {
-
-
-                    if (status.isSuccess()) {
-
-                        Log.d(LOG_TAG, "location tracking requested") ;
-                    }
-
-                }
-            });
-
-
-            registerTrackReceiver();
-
-            //SWITCH off GeofenceLiveness updates - they are not necessary and may cause conflict with
-            // high accuracy updates
-            stopGeofenceLivenessUpdates();
-        }
-
-
-        public void stopTrackUpdates()
-        {
-
-
-            Intent locationUpdateIntent = new Intent() ;
-            locationUpdateIntent.setAction(LocationUpdateIntentService.ACTION_LOCATION_UPDATE) ;
-            locationUpdateIntent.setClass(this.locationAPI.getApplicationContext(),
-                    org.fabeo.benbutchart.webmap.LocationUpdateIntentService.class) ;
-
-
-            PendingIntent locationIntent = PendingIntent.getService(this.locationAPI.getApplicationContext(), 0,
-                    locationUpdateIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-            PendingResult<Status> backgroundResult =
-                    LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, locationIntent);
-            locationIntent.cancel();
-
-            backgroundResult.setResultCallback(new ResultCallback<Status>() {
-                @Override
-                public void onResult(Status status) {
-                    if(status.isSuccess()) {
-                        Log.d(LOG_TAG, " removed tracking updates");
-                    }
-                }
-            }) ;
-
-            unregisterTrackReceiver();
-
-            // switch GEOFENCE Liveness updates back on if active
-            // TODO add geofenceLive and update flags
-            requestGeofenceLivenessUpdates(20000);
-        }
-
-
-        public void registerGeofenceLivenessReceiver()
-        {
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(LocationUpdateIntentService.ACTION_GEOFENCE_LIVENESS_UPDATE);
-
-            if(this.geofenceLivenessReceiver!= null) {
-                this.locationAPI.getApplicationContext().registerReceiver(this.geofenceLivenessReceiver, filter);
-                Log.d(LOG_TAG, "registered TrackUpdateReceiver");
-            }
-            else
-            {
-                Log.e(LOG_TAG, " Could not register GeofenceLivenessReceiver") ;
-            }
-
-        }
-
-
-        public void registerTrackReceiver()
-        {
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(LocationUtils.LOCATION_UPDATE_ACTION);
-
-            if(this.trackUpdateReceiver!= null) {
-                this.locationAPI.getApplicationContext().registerReceiver(this.trackUpdateReceiver, filter);
-                Log.d(LOG_TAG, "registered TrackUpdateReceiver");
-            }
-            else
-            {
-                Log.e(LOG_TAG, " Could not register TrackUpdateReceiver") ;
-            }
-
-        }
-
-        public void unregisterTrackReceiver()
-        {
-            if(this.trackUpdateReceiver!=null) {
-
-                this.locationAPI.getApplicationContext().unregisterReceiver(this.trackUpdateReceiver);
-                Log.d(LOG_TAG, "Unregistered TrackUpdateReceiver");
-            }
-            else
-            {
-                Log.e(LOG_TAG, " Could noe unregister TrackUpdateReceiver") ;
-            }
-        }
-
-
-        public void unregisterGeofenceLivenessReceiver()
-        {
-            if(this.geofenceLivenessReceiver!=null) {
-
-                this.locationAPI.getApplicationContext().unregisterReceiver(this.geofenceLivenessReceiver);
-                Log.d(LOG_TAG, "Unregistered GeofenceLivenessReceiver");
-            }
-            else
-            {
-                Log.e(LOG_TAG, " Could noe unregister GeofenceReceiver") ;
-            }
-        }
-
-
-        @Override
-        public void onConnectionSuspended(int i) {
-
-            Log.d(LOG_TAG, "onConnectionSuspended") ;
-        }
-
-        @Override
-        public void onConnectionFailed(ConnectionResult connectionResult) {
-
-            Log.d(LOG_TAG, "onConnectionFailed") ;
-        }
 
         public class LocationUpdateListener implements LocationListener {
             @Override
@@ -416,51 +173,17 @@ public class LocationServicesClient {
             @Override
             public void onLocationChanged(Location location) {
 
-                Log.d("LocationFixListener", "onLocationChanged" ) ;
+                Log.d("LocationFixListener", "onLocationChanged") ;
                 if(locationAPI != null) {
                     Log.d("LocationFixListener", "set CurrentLocation" ) ;
-                    locationAPI.setCurrentLocation(location);
+                    locationAPI.setCurrentLocation(location) ;
                     Log.d("LocationFixListener", "onLocationFix" ) ;
                     locationAPI.onLocationFix(location);
                 }
             }
         }
 
-        public class GeofenceLivenessReceiver extends BroadcastReceiver {
-            @Override
-            public void onReceive(Context context, Intent intent) {
 
-
-                Log.d(LOG_TAG, "GeofenceLivenessUpdateReceiver: onReceive called");
-                Location updateLocation = (Location) intent.getExtras().get(LocationServices.FusedLocationApi.KEY_LOCATION_CHANGED);
-                locationAPI.onGeofenceLivenessUpdate(updateLocation);
-            }
-        }
-
-        public class TrackUpdateReceiver extends BroadcastReceiver
-        {
-
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-
-                Log.d(LOG_TAG, "TrackUpdateReceiver: onReceive called");
-                Location updateLocation = (Location) intent.getExtras().get(LocationServices.FusedLocationApi.KEY_LOCATION_CHANGED);
-                String latestTrackData = (String) intent.getExtras().get("org.fabeo.benbutchart.webmap.TRACKDATA");
-                String latestPoint = (String) intent.getExtras().get("org.fabeo.benbutchart.webmap.POINT");
-
-                Log.d(LOG_TAG, "onReceive: latestTrackData:" + latestTrackData );
-                locationAPI.onTrackUpdate(latestTrackData);
-            }
-
-        }
-
-
-
-
-
-    }
 
 
 }

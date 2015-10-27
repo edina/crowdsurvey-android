@@ -43,7 +43,7 @@ var marker = L.marker([53.3956, -2.9783], {icon: myIcon}).addTo(map);
 function onLocationFix(latlonStr){
 
     var latlonObj = JSON.parse(latlonStr);
-    var latlng = L.latLng(latlonObj.lat, latlonObj.lon);
+    var latlng = L.latLng(latlonObj.geometry.coordinates[0], latlonObj.geometry.coordinates[1]);
     marker.setLatLng(latlng) ;
     map.panTo(latlng);
 

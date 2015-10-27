@@ -70,6 +70,7 @@ public class FieldTripMap extends AppCompatActivity
                 {
                     Log.d(LOG_TAG, " LOADED map.html") ;
                     locationAPI.setCallbackScriptLoaded(true);
+                    locationAPI.isCallbackScriptLoaded();
                     // request 3 updates initially to get more accurate initial fix
                     locationAPI.requestLocationFix(3);
 
@@ -92,7 +93,13 @@ public class FieldTripMap extends AppCompatActivity
         });
 
 
+        // setup toolbar, floating action button drawer and navigation view
+       viewInit();
 
+    }
+
+    private void viewInit()
+    {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

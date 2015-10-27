@@ -5,9 +5,12 @@ import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import uk.ac.edina.fieldtriplite.utils.LocationUtils;
+
 /**
  * Created by benbutchart on 21/10/15.
  */
+
 
 
 public class WebViewLocationAPI {
@@ -16,7 +19,7 @@ public class WebViewLocationAPI {
     private static final String LOG_TAG = "WebViewLocationAPI" ;
     private WebView webView ;
     private Location currentLocation = null ;
-   // private LocationClient locationClient ;
+    private LocationServicesClient locationClient ;
 
     private boolean updatesRequested = false ;
     private boolean locationFixObtained = false ;
@@ -27,18 +30,27 @@ public class WebViewLocationAPI {
     public WebViewLocationAPI(WebView webView)
     {
         this.webView = webView ;
-        this.locationClient = new LocationClient(webView.getContext() , this) ;
+        this.locationClient = new LocationServicesClient(webView.getContext(), this) ;
+
     }
 
     //  we need to check if the WebView has fully loaded the html page and javascript before we
     // start callback with location updates.
 
     public boolean isCallbackScriptLoaded() {
+
+        Log.d(LOG_TAG, "isCallbackScriptLoaded:" + isCallbackScriptLoaded) ;
         return isCallbackScriptLoaded;
     }
 
     public void setCallbackScriptLoaded(boolean isCallbackScriptLoaded) {
         this.isCallbackScriptLoaded = isCallbackScriptLoaded;
+    }
+
+    public void setCurrentLocation(Location location)
+    {
+
+        this.currentLocation = location ;
     }
 
 
@@ -109,7 +121,7 @@ public class WebViewLocationAPI {
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    String latlon = getLatLngJSON(updateLocation);
+                    String latlon = LocationUtils.getLocationAsGeoJSONPoint(updateLocation);
                     webView.loadUrl("javascript:onLocationUpdate('" + latlon + "');");
 
                 }
@@ -130,7 +142,7 @@ public class WebViewLocationAPI {
                 @Override
                 public void run() {
 
-                    final String latlon = getLatLngJSON(locationFix);
+                    final String latlon = LocationUtils.getLocationAsGeoJSONPoint(locationFix);
                     Log.d(LOG_TAG, "callback to onLocationFix() with latlon" + latlon) ;
                     webView.loadUrl("javascript:onLocationFix('" + latlon + "');");
 
