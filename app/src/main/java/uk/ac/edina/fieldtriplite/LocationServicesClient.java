@@ -67,7 +67,7 @@ import java.util.ArrayList;
         @Override
         public void onConnectionFailed(ConnectionResult connectionResult) {
 
-            Log.d(LOG_TAG, "onConnectionFailed") ;
+            Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult.toString()) ;
         }
 
         @Override
@@ -85,7 +85,7 @@ import java.util.ArrayList;
                 Log.d(LOG_TAG ," pending location updates requested") ;
             }
 
-            // check
+            // check if a locationfix request is pending
             if(this.locationFixPending)
             {
                 this.requestLocationFix(1);
@@ -140,20 +140,6 @@ import java.util.ArrayList;
         {
             LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this.updateListener) ;
         }
-
-
-
-        public void removeGeofence(int id)
-        {
-            // TODO remove geofence
-        }
-
-
-
-
-
-
-
 
 
 

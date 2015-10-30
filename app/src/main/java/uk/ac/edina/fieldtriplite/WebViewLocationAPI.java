@@ -122,6 +122,8 @@ public class WebViewLocationAPI {
                 @Override
                 public void run() {
                     String latlon = LocationUtils.getLocationAsGeoJSONPoint(updateLocation);
+                    // TODO check if page loaded ?
+                    // TODO catch errors using ChromeWebClient
                     webView.loadUrl("javascript:onLocationUpdate('" + latlon + "');");
 
                 }

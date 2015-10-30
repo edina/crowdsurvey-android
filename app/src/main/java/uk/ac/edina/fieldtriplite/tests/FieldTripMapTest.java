@@ -38,12 +38,15 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
     private boolean pageLoaded = false ;
     private final MockWebViewClient mockWebViewClient = new MockWebViewClient();
 
-    private enum CallbackStatus {
-        OK,
-        FAILED
+    private String chromeClientConsoleMessage ;
+
+    private enum ChromeClientConsoleCheckStatus {
+        FOUND,
+        NOT_FOUND
     };
 
-    private CallbackStatus callbackStatus = CallbackStatus.OK ;
+    private ChromeClientConsoleCheckStatus chromeClientConsoleCheckStatus = ChromeClientConsoleCheckStatus.NOT_FOUND ;
+
 
     public FieldTripMapTest() {
         super(FieldTripMap.class);
@@ -73,19 +76,17 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
 
            }
 
-         public void testInitialMapLoaded() {
 
-             // relaod web page using mock web view client
-             // the mock webview client will enable us to capture onReceoveError event if something goes wrong
+        public void testWebSettings() {
 
-             getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient)) ;
-             // give the page a couple of seconds to load
-             sleep(3000) ;
+            fail();
+        }
 
-             Log.e("FieldTripMapTest", "testInitialMapLoaded pageLoaded:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
-             assertFalse("error occured loading map", mockWebViewClient.mError);
-             assertTrue("map.html page loaded", pageLoaded);
-         }
+        public void testIniitalLocationFix()
+        {
+
+
+        }
 
         public void testCallbackScriptLoadedSet() {
 
@@ -142,22 +143,21 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
             pageLoaded = false ;
             countTilesLoaded = 0 ;
             // reload page with MockWebViewClient to capture any onReceiveError callback
-
+            // and count map tiles loaded
             getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient)) ;
-           // give some time
-            sleep(2000);
+           // give it some time to load
+            sleep(3000);
             Log.e("FieldTripMapTest", " testMApTileLoaded pageLoaded:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
             assertTrue("page reloaded", pageLoaded);
             assertFalse("error occured loading map", mockWebViewClient.mError);
-            // assertEquals("Expect map tiles loaded", 6, countTilesLoaded) ;
-
+            assertTrue("At least 6 map tiles loaded:actual loeaded" + countTilesLoaded, countTilesLoaded > 5) ;
 
         }
 
-        public void testOnLocationFixCallback()
+        public void testOnLocationFix_ReferenceError()
         {
 
-            Log.e("FieldTripMapTest", " testOnLocationFixCallback:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
+            Log.e("FieldTripMapTest", " testOnLocationFix_ReferenceError:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
 
             countTilesLoaded = 0;
 
@@ -167,22 +167,8 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
 
             // use webchromclient to capture console message that occurs
             // if onLocationFix method is not defined
-            getInstrumentation().runOnMainSync(new Runnable() {
-                @Override
-                public void run() {
-                    mWebView.setWebChromeClient(new WebChromeClient() {
-                        @Override
-                        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                            if(consoleMessage.message().contains("onLocationFix") )
-                            {
-                                callbackStatus = CallbackStatus.FAILED ;
-                            }
-                            Log.e("FieldTripMapTest", "onConsoleMessage:" + consoleMessage.message());
-                            return true ;
-                        }
-                    });
-                }
-            });
+            ChromeClientConsoleMessageChecker chromeConsoleChecker = new ChromeClientConsoleMessageChecker("Uncaught ReferenceError") ;
+            getInstrumentation().runOnMainSync(chromeConsoleChecker) ;
 
 
             // call onLocationFix Javascript function on the webview using mockWebViewClient
@@ -191,19 +177,109 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
 
             // give a moment for tiles to laod
             sleep(3000);
-            Log.e("FieldTripMapTest", " testOnLocationFixCallback:" + pageLoaded + " countTileLoaded:" + countTilesLoaded) ;
-            assertTrue("Test Callback status OK", callbackStatus == CallbackStatus.OK) ;
+            Log.e("FieldTripMapTest", " testOnLocationFix_ReferenceError:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
+            assertTrue("Check message 'Uncaught ReferenceError' was not reported by Chrome Message Console:" + chromeClientConsoleMessage, chromeClientConsoleCheckStatus == ChromeClientConsoleCheckStatus.NOT_FOUND) ;
 
         }
 
+    public void testOnLocationFix_TypeError()
+    {
 
-           private void sleep(long millis) {
+        Log.e("FieldTripMapTest", " testOnLocationFix_TypeError:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
+
+        countTilesLoaded = 0;
+
+        Location location = LocationUtils.createLocation(50.34f, 2.3f, 1.0f);
+        String locationJSON = LocationUtils.getLocationAsGeoJSONPoint(location);
+        String loadUrl = "javascript:onLocationFix('" + locationJSON + "');";
+
+        // use webchromclient to capture console message that occurs
+        // if onLocationFix method is not defined
+        ChromeClientConsoleMessageChecker chromeConsoleChecker = new ChromeClientConsoleMessageChecker("Uncaught TypeError") ;
+        getInstrumentation().runOnMainSync(chromeConsoleChecker) ;
+
+
+        // call onLocationFix Javascript function on the webview using mockWebViewClient
+        getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient, loadUrl));
+
+
+        // give a moment for tiles to laod
+        sleep(3000);
+        Log.e("FieldTripMapTest", " testOnLocationFix_TypeErrork:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
+        assertTrue("Check message 'Uncaught TypeError' was not reported by Chrome Message Console:" + chromeClientConsoleMessage,
+                chromeClientConsoleCheckStatus == ChromeClientConsoleCheckStatus.NOT_FOUND) ;
+
+    }
+
+
+
+    public void testOnLocationUpdate_ReferenceError()
+    {
+
+        Log.e("FieldTripMapTest", " testOnLocationUpdate_ReferenceError:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
+
+        countTilesLoaded = 0;
+
+        Location location = LocationUtils.createLocation(50.34f, 2.3f, 1.0f);
+        String locationJSON = LocationUtils.getLocationAsGeoJSONPoint(location);
+        String loadUrl = "javascript:onLocationUpdate('" + locationJSON + "');";
+
+        // use webchromclient to capture console message that occurs
+        // if onLocationFix method is not defined
+        ChromeClientConsoleMessageChecker chromeConsoleChecker = new ChromeClientConsoleMessageChecker("Uncaught ReferenceError") ;
+        getInstrumentation().runOnMainSync(chromeConsoleChecker) ;
+        // call onLocationFix Javascript function on the webview using mockWebViewClient
+        getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient, loadUrl));
+
+
+        // give a moment for tiles to laod
+        sleep(3000);
+        Log.e("FieldTripMapTest", " testOnLocationUpdate_ReferenceError:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
+
+        assertTrue("Check message 'Uncaught ReferenceError' was not reported by Chrome Message Console: " + chromeClientConsoleMessage ,
+                chromeClientConsoleCheckStatus == ChromeClientConsoleCheckStatus.NOT_FOUND) ;
+
+    }
+
+
+
+    public void testOnLocationUpdate_TypeError()
+    {
+
+        Log.e("FieldTripMapTest", " testOnLocationUpdate_TypeError:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
+
+        countTilesLoaded = 0;
+
+        Location location = LocationUtils.createLocation(50.34f, 2.3f, 1.0f);
+        String locationJSON = LocationUtils.getLocationAsGeoJSONPoint(location);
+        String loadUrl = "javascript:onLocationUpdate('" + locationJSON + "');";
+
+        // use webchromclient to capture console message that occurs
+        // if onLocationFix method is not defined
+        ChromeClientConsoleMessageChecker chromeConsoleChecker = new ChromeClientConsoleMessageChecker("Uncaught TypeError") ;
+        getInstrumentation().runOnMainSync(chromeConsoleChecker) ;
+        // call onLocationFix Javascript function on the webview using mockWebViewClient
+        getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient, loadUrl));
+
+
+        // give a moment for tiles to laod
+        sleep(3000);
+        Log.e("FieldTripMapTest", " testOnLocationUpdate_TypeError:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
+        assertTrue("Check message 'Uncaught TypeError' was not reported by Chrome Message Console: " + chromeClientConsoleMessage ,
+                chromeClientConsoleCheckStatus == ChromeClientConsoleCheckStatus.NOT_FOUND) ;
+
+    }
+
+
+    private void sleep(long millis) {
                try {
                    Thread.sleep(millis);
                } catch (InterruptedException e) {
                    fail(e.getMessage());
                }
            }
+
+
 
            private class MockWebViewClient extends WebViewClient {
                boolean mError;
@@ -239,6 +315,8 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
                    pageLoaded = true;
                }
 
+
+
                @Override
                public void onLoadResource(WebView view, String url) {
                    super.onLoadResource(view, url);
@@ -257,7 +335,38 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
            }
 
 
-       private class WebViewPageReload implements Runnable
+        private class ChromeClientConsoleMessageChecker implements Runnable {
+
+               private String searchString = "" ;
+
+                public ChromeClientConsoleMessageChecker(String searchString)
+                {
+                    chromeClientConsoleCheckStatus = ChromeClientConsoleCheckStatus.NOT_FOUND ;
+                    chromeClientConsoleMessage = "" ;
+                    this.searchString = searchString ;
+                }
+                @Override
+                public void run () {
+                    mWebView.setWebChromeClient(new WebChromeClient() {
+                        @Override
+                        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                            Log.e("FieldTripMapTest", "onConsoleMessage" + consoleMessage.message());
+
+                            if (consoleMessage.message().contains(searchString)) {
+                                chromeClientConsoleCheckStatus = ChromeClientConsoleCheckStatus.FOUND ;
+                                chromeClientConsoleMessage = consoleMessage.message() ;
+                                Log.e("FieldTripMapTest", "onConsoleMessage: FOUND" + consoleMessage.message());
+                            }
+
+                            return true;
+                        }
+                    });
+                }
+
+
+        }
+
+    private class WebViewPageReload implements Runnable
        {
            private WebViewClient webViewClient ;
            private WebView webView ;
@@ -295,6 +404,7 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
                     Log.e("FieldTripMapTest", "WebViewPageReload:" + loadUrl);
                      try {
                          //mWebView.clearCache(true);
+                         // mWebView.reload();
                          mWebView.loadUrl(this.loadUrl);
                      }catch(Error err)
                      {
