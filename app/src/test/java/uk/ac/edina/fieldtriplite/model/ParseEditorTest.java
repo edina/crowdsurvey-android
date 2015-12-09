@@ -1,4 +1,5 @@
-package uk.ac.edina.fieldtriplite.tests;
+package uk.ac.edina.fieldtriplite.model;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -6,15 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-
-import uk.ac.edina.fieldtriplite.model.ParseEditor;
-import uk.ac.edina.fieldtriplite.model.RecordModel;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+/**
+ * Created by murrayking on 09/12/2015.
+ */
 
 /**
  * Created by murray on 08/12/15.
