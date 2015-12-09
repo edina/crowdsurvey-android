@@ -15,6 +15,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.couchbase.lite.Database;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -67,6 +69,15 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
         assertNotNull("mFieldTripMapActivity is not null", mFieldTripMapActivity);
         assertNotNull("mWebView is not null", mWebView);
 
+    }
+
+    /**
+     * Test the initialization of the database
+     */
+    public void testDatabaseInitialization() {
+        Database database = mFieldTripMapActivity.getDatabase();
+
+        assertNotNull(database);
     }
 
 

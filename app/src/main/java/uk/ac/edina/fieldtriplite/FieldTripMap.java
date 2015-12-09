@@ -18,6 +18,14 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.couchbase.lite.CouchbaseLiteException;
+import com.couchbase.lite.Database;
+import com.couchbase.lite.Manager;
+import com.couchbase.lite.android.AndroidContext;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.io.IOException;
+
 
 public class FieldTripMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -27,6 +35,11 @@ public class FieldTripMap extends AppCompatActivity
     WebView webView = null ;
     WebViewLocationAPI locationAPI = null ;
     private WebViewClient webViewClient = null ;
+
+    // Couchbase properties
+    private static final String DATABASE_NAME = "crowdsurveydb";
+    private Database database;
+    private Manager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +113,45 @@ public class FieldTripMap extends AppCompatActivity
         // setup toolbar, floating action button drawer and navigation view
        viewInit();
 
+        // Init the couchbase database
+        initDatabase();
+    }
+
+    /**
+     * Initialize the couchbase database
+     */
+    private void initDatabase() {
+        try {
+
+            Manager.enableLogging(LOG_TAG, com.couchbase.lite.util.Log.VERBOSE);
+            Manager.enableLogging(com.couchbase.lite.util.Log.TAG, com.couchbase.lite.util.Log.VERBOSE);
+            Manager.enableLogging(com.couchbase.lite.util.Log.TAG_SYNC_ASYNC_TASK, com.couchbase.lite.util.Log.VERBOSE);
+            Manager.enableLogging(com.couchbase.lite.util.Log.TAG_SYNC, com.couchbase.lite.util.Log.VERBOSE);
+            Manager.enableLogging(com.couchbase.lite.util.Log.TAG_QUERY, com.couchbase.lite.util.Log.VERBOSE);
+            Manager.enableLogging(com.couchbase.lite.util.Log.TAG_VIEW, com.couchbase.lite.util.Log.VERBOSE);
+            Manager.enableLogging(com.couchbase.lite.util.Log.TAG_DATABASE, com.couchbase.lite.util.Log.VERBOSE);
+
+            manager = new Manager(new AndroidContext(getApplicationContext()), Manager.DEFAULT_OPTIONS);
+        } catch (IOException e) {
+            com.couchbase.lite.util.Log.e(LOG_TAG, "Cannot create Manager object", e);
+            return;
+        }
+
+        try {
+            database = manager.getDatabase(DATABASE_NAME);
+        } catch (CouchbaseLiteException e) {
+            com.couchbase.lite.util.Log.e(LOG_TAG, "Cannot get Database", e);
+            return;
+        }
+    }
+
+    /**
+     * Getter for the application database
+     *
+     * @return current instance of the application database
+     */
+    public Database getDatabase() {
+        return this.database;
     }
 
     private void viewInit()
