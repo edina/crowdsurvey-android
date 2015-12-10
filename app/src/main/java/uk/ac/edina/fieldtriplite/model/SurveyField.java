@@ -3,7 +3,7 @@ package uk.ac.edina.fieldtriplite.model;
 /**
  * Created by murrayking on 07/12/2015.
  */
-interface RecordField {
+interface SurveyField {
 
     String getId();
 
@@ -15,7 +15,7 @@ interface RecordField {
 
     Boolean isPersistent();
 
-    RecordProperties getRecordProperties();
+    SurveyFieldProperties getSurveyFieldProperties();
 
 
 }

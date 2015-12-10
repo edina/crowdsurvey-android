@@ -3,9 +3,6 @@ package uk.ac.edina.fieldtriplite.tests;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.InstrumentationTestCase;
-import android.test.suitebuilder.annotation.LargeTest;
-import android.test.suitebuilder.annotation.MediumTest;
 import android.util.Log;
 import android.view.InputEvent;
 import android.webkit.ConsoleMessage;
@@ -20,9 +17,6 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Enumeration;
 
 import uk.ac.edina.fieldtriplite.R ;
 
@@ -30,7 +24,7 @@ import uk.ac.edina.fieldtriplite.R ;
 import uk.ac.edina.fieldtriplite.FieldTripMap;
 import uk.ac.edina.fieldtriplite.WebViewLocationAPI;
 import uk.ac.edina.fieldtriplite.document.Record;
-import uk.ac.edina.fieldtriplite.model.RecordModel;
+import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.utils.LocationUtils;
 
 /**
@@ -89,10 +83,10 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
      */
     public void testDatabasePutRecord() {
         Database database = mFieldTripMapActivity.getDatabase();
-        RecordModel record = new RecordModel();
+        SurveyModel record = new SurveyModel();
 
         try {
-            Document document = Record.putRecord(database, new RecordModel());
+            Document document = Record.putRecord(database, new SurveyModel());
             assertNotNull(document);
         } catch (CouchbaseLiteException e) {
             fail(e.getMessage());
@@ -105,12 +99,12 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
     public void testDatabaseGetRecord() {
         Database database = mFieldTripMapActivity.getDatabase();
         try {
-            RecordModel record = new RecordModel();
+            SurveyModel record = new SurveyModel();
             record.setId("89be54fd-f559-4c36-80d0-721035dd17c8");
             Document document = Record.putRecord(database, record);
             assertNotNull(document);
 
-            RecordModel retrievedRecord = Record.getRecord(database, document.getId());
+            SurveyModel retrievedRecord = Record.getRecord(database, document.getId());
             assertNotNull(retrievedRecord);
 
             assertEquals(record.getId(), retrievedRecord.getId());

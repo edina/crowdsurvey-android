@@ -7,17 +7,17 @@ import java.util.Map;
 /**
  * Created by murray on 08/12/15.
  */
-public class ParseEditor {
+public class ParseSurvey {
 
 
 
-    public List<RecordField> buildFields(RecordModel recordModel){
+    public List<SurveyField> buildFields(SurveyModel surveyModel){
 
-        List<RecordField> recordFields = new ArrayList<>();
-        List<Map<String,Object>> fields = recordModel.getFields();
+        List<SurveyField> surveyFields = new ArrayList<>();
+        List<Map<String,Object>> fields = surveyModel.getFields();
         for (Map<String,Object> map: fields) {
 
-            RecordFieldImpl.RecordFieldBuilder recordField = new RecordFieldImpl.RecordFieldBuilder();
+            SurveyFieldImpl.RecordFieldBuilder surveyField = new SurveyFieldImpl.RecordFieldBuilder();
             for (Map.Entry<String, Object> field : map.entrySet()){
                 String key = field.getKey();
                 Object value = field.getValue();
@@ -26,19 +26,19 @@ public class ParseEditor {
                 switch (key) {
 
                     case "id" :
-                        recordField.id(value.toString());
+                        surveyField.id(value.toString());
                         break;
                     case "type" :
-                        recordField.type(value.toString());
+                        surveyField.type(value.toString());
                         break;
                     case "label":
-                        recordField.label(value.toString());
+                        surveyField.label(value.toString());
                         break;
                     case "required":
-                        recordField.required(Boolean.valueOf(value.toString()));
+                        surveyField.required(Boolean.valueOf(value.toString()));
                         break;
                     case "persistent":
-                        recordField.persistent(Boolean.valueOf(value.toString()));
+                        surveyField.persistent(Boolean.valueOf(value.toString()));
                         break;
                     case "properties":
                         break;
@@ -47,11 +47,11 @@ public class ParseEditor {
                 }
 
             }
-            recordFields.add(recordField.build());
+            surveyFields.add(surveyField.build());
 
 
         }
-        return recordFields;
+        return surveyFields;
     }
 
 

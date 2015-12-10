@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by murrayking on 07/12/2015.
  */
-public interface RecordProperties {
+public interface SurveyFieldProperties {
 
     String getPlaceholder();
     Integer getMaxChars();

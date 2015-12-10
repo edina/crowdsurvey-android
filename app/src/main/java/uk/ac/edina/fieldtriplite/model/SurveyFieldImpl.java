@@ -6,7 +6,7 @@ package uk.ac.edina.fieldtriplite.model;
 
 import com.google.common.base.Strings;
 
-public class RecordFieldImpl implements  RecordField {
+public class SurveyFieldImpl implements SurveyField {
 
     private String id;
 
@@ -18,20 +18,20 @@ public class RecordFieldImpl implements  RecordField {
 
     private Boolean persistent;
 
-    private RecordProperties recordProperties;
+    private SurveyFieldProperties surveyFieldProperties;
 
-    private RecordFieldImpl(String id, String label, String type, Boolean required, Boolean persistent, RecordProperties recordProperties) {
+    private SurveyFieldImpl(String id, String label, String type, Boolean required, Boolean persistent, SurveyFieldProperties surveyFieldProperties) {
         this.id = id;
         this.label = label;
         this.type = type;
         this.required = required;
         this.persistent = persistent;
-        this.recordProperties = recordProperties;
+        this.surveyFieldProperties = surveyFieldProperties;
     }
 
     @Override
-    public RecordProperties getRecordProperties() {
-        return recordProperties;
+    public SurveyFieldProperties getSurveyFieldProperties() {
+        return surveyFieldProperties;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class RecordFieldImpl implements  RecordField {
 
         private Boolean persistent;
 
-        private RecordProperties recordProperties;
+        private SurveyFieldProperties surveyFieldProperties;
 
         public RecordFieldBuilder(){}
 
@@ -100,19 +100,19 @@ public class RecordFieldImpl implements  RecordField {
             this.persistent = persistent;
             return this;
         }
-        public RecordFieldBuilder required(RecordProperties recordProperties){
-            this.recordProperties = recordProperties;
+        public RecordFieldBuilder required(SurveyFieldProperties surveyFieldProperties){
+            this.surveyFieldProperties = surveyFieldProperties;
             return this;
         }
 
 
 
-        public RecordField build()
+        public SurveyField build()
         {
             if(Strings.isNullOrEmpty(id) || Strings.isNullOrEmpty(label) || Strings.isNullOrEmpty(type)){
-                throw new IllegalArgumentException("Missing required Param for RecordField");
+                throw new IllegalArgumentException("Missing required Param for SurveyField");
             }
-            return new RecordFieldImpl( id, label, type, required, persistent, recordProperties);
+            return new SurveyFieldImpl(id, label, type, required, persistent, surveyFieldProperties);
         }
     }
 

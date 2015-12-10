@@ -1,10 +1,5 @@
 package uk.ac.edina.fieldtriplite.model;
 import com.strongloop.android.loopback.Model;
-import com.strongloop.android.loopback.ModelRepository;
-import com.strongloop.android.loopback.RestAdapter;
-import com.strongloop.android.loopback.callbacks.VoidCallback;
-import com.strongloop.android.remoting.BeanUtil;
-import com.strongloop.android.remoting.BeanUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +7,7 @@ import java.util.Map;
 /**
  * Loopback model of Record.
  */
-public class RecordModel extends Model {
+public class SurveyModel extends Model {
 
     private String id;
 
