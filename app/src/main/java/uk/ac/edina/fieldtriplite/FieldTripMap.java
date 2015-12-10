@@ -31,7 +31,7 @@ public class FieldTripMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
-    private static final String LOG_TAG = "FieldtripMap Activity" ;
+    public static final String LOG_TAG = "FieldtripMap Activity" ;
     WebView webView = null ;
     WebViewLocationAPI locationAPI = null ;
     private WebViewClient webViewClient = null ;
