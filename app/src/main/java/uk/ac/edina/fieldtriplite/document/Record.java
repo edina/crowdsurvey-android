@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.edina.fieldtriplite.FieldTripMap;
-import uk.ac.edina.fieldtriplite.model.SurveyModel;
+import uk.ac.edina.fieldtriplite.model.RecordModel;
 
 public class Record {
     private static final String VIEW_NAME = "records";
@@ -24,7 +24,7 @@ public class Record {
      * @return document created in the database
      * @throws CouchbaseLiteException
      */
-    public static Document putRecord(Database database, SurveyModel record)  throws CouchbaseLiteException {
+    public static Document putRecord(Database database, RecordModel record)  throws CouchbaseLiteException {
         Document document = database.createDocument();
 
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -45,12 +45,12 @@ public class Record {
      * @return a record
      * @throws CouchbaseLiteException
      */
-    public static SurveyModel getRecord(Database database, String recordId)  throws CouchbaseLiteException {
+    public static RecordModel getRecord(Database database, String recordId)  throws CouchbaseLiteException {
         Document document = database.getDocument(recordId);
         Object recordHashMap = document.getProperty(RECORD_PROP);
 
         ObjectMapper mapper = new ObjectMapper();
-        SurveyModel record = mapper.convertValue(recordHashMap, SurveyModel.class);
+        RecordModel record = mapper.convertValue(recordHashMap, RecordModel.class);
 
         return record;
     }
