@@ -64,11 +64,31 @@ public class ParseSurvey {
             switch (key) {
                 case "other":
                     fieldProperties.other(Boolean.valueOf(value.toString()));
+                    break;
+                case "options":
+                    fieldProperties.options(buildOptions((List<Object>)value));
+                    break;
             }
         }
 
         return fieldProperties.build();
 
+    }
+
+
+    private List<Option> buildOptions(List<Object> options) {
+        List<Option> propertyOptions = new ArrayList<>();
+        for (Object option : options) {
+            if(option instanceof String){
+                propertyOptions.add(new OptionImpl(option.toString(), null));
+            } else if(option instanceof List){
+                List<String> optionWithImageLocation = (List<String>) option;
+                String label = optionWithImageLocation.get(0);
+                String imageLocation = optionWithImageLocation.get(1);
+                propertyOptions.add(new OptionImpl(label, imageLocation));
+            }
+        }
+        return propertyOptions;
     }
 
 
