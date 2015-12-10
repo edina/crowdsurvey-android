@@ -73,7 +73,8 @@ public class SurveyFieldImpl implements SurveyField {
 
         private SurveyFieldProperties surveyFieldProperties;
 
-        public RecordFieldBuilder(){}
+        public RecordFieldBuilder() {
+        }
 
         public RecordFieldBuilder id(String id) {
             this.id = id;
@@ -96,24 +97,25 @@ public class SurveyFieldImpl implements SurveyField {
             return this;
         }
 
-        public RecordFieldBuilder persistent(Boolean persistent){
+        public RecordFieldBuilder persistent(Boolean persistent) {
             this.persistent = persistent;
             return this;
         }
-        public RecordFieldBuilder required(SurveyFieldProperties surveyFieldProperties){
+
+        public RecordFieldBuilder properties(SurveyFieldProperties surveyFieldProperties) {
             this.surveyFieldProperties = surveyFieldProperties;
             return this;
         }
 
 
-
-        public SurveyField build()
-        {
-            if(Strings.isNullOrEmpty(id) || Strings.isNullOrEmpty(label) || Strings.isNullOrEmpty(type)){
+        public SurveyField build() {
+            if (Strings.isNullOrEmpty(id) || Strings.isNullOrEmpty(label) || Strings.isNullOrEmpty(type)) {
                 throw new IllegalArgumentException("Missing required Param for SurveyField");
             }
             return new SurveyFieldImpl(id, label, type, required, persistent, surveyFieldProperties);
         }
+
+
     }
 
 }

@@ -7,8 +7,21 @@ import java.util.List;
  */
 public interface SurveyFieldProperties {
 
+    String getMax();
+
+    Boolean isOther();
+
     String getPlaceholder();
+
     Integer getMaxChars();
+
     String getPrefix();
+
     List<Option> getOptions();
+
+    List<Option> getRadios();
+
+    String getStep();
+
+    String getMin();
 }

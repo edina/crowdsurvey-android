@@ -33,6 +33,7 @@ public class ParseSurveyTest {
         properties.put("prefix", "record");
         properties.put("placeholder", "Place default text here (if any)");
         properties.put("max-chars", "30");
+        properties.put("other", Boolean.TRUE);
         fieldOne.put("properties", properties);
 
         fields.add(fieldOne);
@@ -75,6 +76,20 @@ public class ParseSurveyTest {
 
         List<SurveyField> surveyFields =  parseSurvey.buildFields(surveyModel2);
 
+
+    }
+
+    @Test
+    public void testSurveyFieldProperties(){
+        ParseSurvey parseSurvey = new ParseSurvey();
+        List<SurveyField> surveyFields =  parseSurvey.buildFields(surveyModel);
+        assertNotNull(surveyFields);
+        assertEquals(1, surveyFields.size());
+        SurveyField surveyField = surveyFields.get(0);
+        SurveyFieldProperties surveyFieldProperties = surveyField.getSurveyFieldProperties();
+        assertNotNull(surveyFieldProperties);
+
+        assertEquals("No other", Boolean.TRUE, surveyFieldProperties.isOther());
 
     }
 }

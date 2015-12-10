@@ -10,25 +10,24 @@ import java.util.Map;
 public class ParseSurvey {
 
 
-
-    public List<SurveyField> buildFields(SurveyModel surveyModel){
+    public List<SurveyField> buildFields(SurveyModel surveyModel) {
 
         List<SurveyField> surveyFields = new ArrayList<>();
-        List<Map<String,Object>> fields = surveyModel.getFields();
-        for (Map<String,Object> map: fields) {
+        List<Map<String, Object>> fields = surveyModel.getFields();
+        for (Map<String, Object> map : fields) {
 
             SurveyFieldImpl.RecordFieldBuilder surveyField = new SurveyFieldImpl.RecordFieldBuilder();
-            for (Map.Entry<String, Object> field : map.entrySet()){
+            for (Map.Entry<String, Object> field : map.entrySet()) {
                 String key = field.getKey();
                 Object value = field.getValue();
 
 
                 switch (key) {
 
-                    case "id" :
+                    case "id":
                         surveyField.id(value.toString());
                         break;
-                    case "type" :
+                    case "type":
                         surveyField.type(value.toString());
                         break;
                     case "label":
@@ -41,6 +40,7 @@ public class ParseSurvey {
                         surveyField.persistent(Boolean.valueOf(value.toString()));
                         break;
                     case "properties":
+                        surveyField.properties(buildFieldProperties((Map<String, Object>) value));
                         break;
 
 
@@ -52,6 +52,23 @@ public class ParseSurvey {
 
         }
         return surveyFields;
+    }
+
+
+    private SurveyFieldProperties buildFieldProperties(Map<String, Object> properties) {
+        SurveyFieldPropertiesImpl.SurveyFieldPropertiesBuilder fieldProperties = new SurveyFieldPropertiesImpl.SurveyFieldPropertiesBuilder();
+        for (Map.Entry<String, Object> field : properties.entrySet()) {
+            String key = field.getKey();
+            Object value = field.getValue();
+
+            switch (key) {
+                case "other":
+                    fieldProperties.other(Boolean.valueOf(value.toString()));
+            }
+        }
+
+        return fieldProperties.build();
+
     }
 
 
