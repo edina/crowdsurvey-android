@@ -15,7 +15,9 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
+import com.couchbase.lite.Document;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -27,6 +29,8 @@ import uk.ac.edina.fieldtriplite.R ;
 
 import uk.ac.edina.fieldtriplite.FieldTripMap;
 import uk.ac.edina.fieldtriplite.WebViewLocationAPI;
+import uk.ac.edina.fieldtriplite.document.Record;
+import uk.ac.edina.fieldtriplite.model.RecordModel;
 import uk.ac.edina.fieldtriplite.utils.LocationUtils;
 
 /**
@@ -79,6 +83,42 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
 
         assertNotNull(database);
     }
+
+    /**
+     * Test storing a record in the database
+     */
+    public void testDatabasePutRecord() {
+        Database database = mFieldTripMapActivity.getDatabase();
+        RecordModel record = new RecordModel();
+
+        try {
+            Document document = Record.putRecord(database, new RecordModel());
+            assertNotNull(document);
+        } catch (CouchbaseLiteException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Test store and retrieve a record in the database
+     */
+    public void testDatabaseGetRecord() {
+        Database database = mFieldTripMapActivity.getDatabase();
+        try {
+            RecordModel record = new RecordModel();
+            record.setId("89be54fd-f559-4c36-80d0-721035dd17c8");
+            Document document = Record.putRecord(database, record);
+            assertNotNull(document);
+
+            RecordModel retrievedRecord = Record.getRecord(database, document.getId());
+            assertNotNull(retrievedRecord);
+
+            assertEquals(record.getId(), retrievedRecord.getId());
+        } catch (CouchbaseLiteException e) {
+            fail(e.getMessage());
+        }
+    }
+
 
 
            public void testPreconditions() {
