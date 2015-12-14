@@ -1,7 +1,16 @@
 package uk.ac.edina.fieldtriplite;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -24,7 +33,10 @@ import com.couchbase.lite.Manager;
 import com.couchbase.lite.android.AndroidContext;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class FieldTripMap extends AppCompatActivity
@@ -40,6 +52,9 @@ public class FieldTripMap extends AppCompatActivity
     private static final String DATABASE_NAME = "crowdsurveydb";
     private Database database;
     private Manager manager;
+
+    //Camera properties
+    private int REQUEST_IMAGE_CAPTURE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,7 +242,10 @@ public class FieldTripMap extends AppCompatActivity
 
         } else if (id == R.id.delete_records) {
 
-        } else if (id == R.id.show_tracks) {
+        } else if (id == R.id.take_photo) {
+            this.takePhoto();
+        }
+        else if (id == R.id.show_tracks) {
 
         } else if (id == R.id.list_tracks) {
 
@@ -243,5 +261,44 @@ public class FieldTripMap extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    private void takePhoto(){
+        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //try {
+                //intent.putExtra(MediaStore.EXTRA_OUTPUT,this.createImageFile().toURI());
+                if(intent.resolveActivity(getPackageManager()) != null){
+                    startActivityForResult(intent,REQUEST_IMAGE_CAPTURE);
+                    Log.d(LOG_TAG, "takePicture intent launched");
+                }
+                else
+                    Log.d(LOG_TAG,"No activity can handle takePicture");
+            //} catch (IOException e) {
+            //    Log.d(LOG_TAG,e.getMessage());
+            //}
+        }
+        else
+            Log.d(LOG_TAG,"The device does not have camera");
+    }
+
+    /**
+     * This method creates a File under the directory for shared photos provided by the phone
+     * @return File
+     * @throws IOException if it has not been possible to create an empty file
+     */
+    private File createImageFile() throws IOException{
+        String fileName = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+        Log.d(LOG_TAG,Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath());
+        File image = File.createTempFile(fileName,".jpeg", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+        return image;
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_IMAGE_CAPTURE){
+            if(resultCode == RESULT_OK)
+                Log.d(LOG_TAG,"takePicture result OK");
+            else if(resultCode == RESULT_CANCELED)
+                Log.d(LOG_TAG,"takePicture result CANCEL. Picture might be taken but cancelled later");
+        }
     }
 }

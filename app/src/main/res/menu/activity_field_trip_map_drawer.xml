@@ -13,6 +13,7 @@
                 android:title="List Records" />
             <item android:id="@+id/delete_records" android:icon="@drawable/ic_action_delete"
             android:title="Delete Record..." />
+            <item android:id="@+id/take_photo" android:title="Take a photo" />
         </menu>
     </item>
 
