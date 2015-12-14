@@ -9,6 +9,7 @@ import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 import org.junit.Test;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -59,26 +60,26 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
     }
 
     @Test
-    public void testAsyncHttpClient() throws Throwable {
+    public void testLiveLoopBackCall() throws Throwable {
         final CountDownLatch signal = new CountDownLatch(1);
 
 
-        runTestOnUiThread(new Runnable() { // THIS IS THE KEY TO SUCCESS
+        runTestOnUiThread(new Runnable() {
             @Override
             public void run() {
                 SurveyModelRepository repository = adapter.createRepository(SurveyModelRepository.class);
 
-                repository.findById("5669a80fdf817f5420780c9c", new ObjectCallback<SurveyModel>() {
+                repository.findById("566ed9b30351d817555158cd", new ObjectCallback<SurveyModel>() {
                     @Override
                     public void onSuccess(SurveyModel object) {
-                        Log.d("RecordModel", object.toString());
+                        Log.d("SurveyModel", object.toString());
                         surveyModel = object;
                         signal.countDown();
                     }
 
                     @Override
                     public void onError(Throwable t) {
-                        Log.d("RecordModel", t.toString());
+                        Log.d("SurveyModel", t.toString());
                         signal.countDown();
                     }
                 });
@@ -86,34 +87,33 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
         });
 
         try {
-            signal.await(30, TimeUnit.SECONDS); // wait for callback
+            signal.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        assertNotNull("NO Survey Model returned", surveyModel);
 
+        ParseSurvey parseSurvey = new ParseSurvey();
+
+        List<SurveyField> surveyFields = parseSurvey.buildFields(surveyModel);
+
+        SurveyField surveyField1 = surveyFields.get(0);
+
+        assertEquals("1. Date of survey", surveyField1.getLabel());
+        assertEquals("text", surveyField1.getType());
+        assertEquals(Boolean.TRUE, surveyField1.isRequired());
+        assertEquals(Boolean.TRUE, surveyField1.isPersistent());
+        assertEquals("form-text-1", surveyField1.getId());
+
+        SurveyFieldProperties surveyFieldProperties = surveyField1.getSurveyFieldProperties();
+        assertEquals("30", surveyFieldProperties.getMax());
+        assertEquals("Place default text here (if any)", surveyFieldProperties.getPlaceholder());
+        assertEquals("record", surveyFieldProperties.getPrefix());
         assertEquals(0, signal.getCount());
     }
 
 
-    /*
-    @Test
-    public void testMakeLoopbackRequest(){
-        SurveyModelRepository repository = adapter.createRepository(SurveyModelRepository.class);
 
-        repository.findById(1, new ObjectCallback<SurveyModel>() {
-            @Override
-            public void onSuccess(SurveyModel object) {
-                Log.d("RecordModel", object.toString());
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                Log.d("RecordModel", t.toString());
-            }
-        });
-        assertNotNull(adapter);
-
-    }*/
 
 }
