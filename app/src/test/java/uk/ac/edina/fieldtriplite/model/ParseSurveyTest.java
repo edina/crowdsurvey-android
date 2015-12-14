@@ -161,5 +161,9 @@ public class ParseSurveyTest {
         Option option1 = options.get(0);
         assertEquals("No option Label", "Label", option1.getLabel());
         assertEquals("No option Image Location", "ImageLocation", option1.getImageLocation().get());
+
+        Option option2 = options.get(1);
+        assertEquals("No option Label", "Label2", option2.getLabel());
+        assertEquals("No option Image Location", "ImageLocation2", option2.getImageLocation().get());
     }
 }
