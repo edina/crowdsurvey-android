@@ -262,35 +262,41 @@ public class FieldTripMap extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    private void takePhoto(){
-        if(getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+    private void takePhoto() {
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //try {
-                //intent.putExtra(MediaStore.EXTRA_OUTPUT,this.createImageFile().toURI());
-                if(intent.resolveActivity(getPackageManager()) != null){
-                    startActivityForResult(intent,REQUEST_IMAGE_CAPTURE);
+            try {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, this.createImageFile().toURI());
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
                     Log.d(LOG_TAG, "takePicture intent launched");
-                }
-                else
-                    Log.d(LOG_TAG,"No activity can handle takePicture");
-            //} catch (IOException e) {
-            //    Log.d(LOG_TAG,e.getMessage());
-            //}
-        }
-        else
-            Log.d(LOG_TAG,"The device does not have camera");
+                } else
+                    Log.d(LOG_TAG, "No activity can handle takePicture");
+            } catch (IOException e) {
+                Log.d(LOG_TAG, e.getMessage());
+            }
+        } else
+            Log.d(LOG_TAG, "The device does not have camera");
     }
-
     /**
-     * This method creates a File under the directory for shared photos provided by the phone
-     * @return File
-     * @throws IOException if it has not been possible to create an empty file
+     * This method creates a File under primary_external_storage_for_app/files/pictures
+     * @return File descriptor
+     * @throws IOException if external storage is not available, the folder CROWD_SURVEY does not exist or
+     * the file cannot be created
      */
     private File createImageFile() throws IOException{
-        String fileName = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
-        Log.d(LOG_TAG,Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath());
-        File image = File.createTempFile(fileName,".jpeg", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
-        return image;
+        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            //File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "CROWD_SURVEY");
+            File folder = new File(this.getExternalFilesDir(null),"pictures");
+            Log.d(LOG_TAG,folder.getAbsolutePath());
+            if (folder.mkdirs()) {
+                String fileName = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+                File image = File.createTempFile(fileName, ".jpg", folder);
+                return image;
+            }
+            throw new IOException("Directory CROWD_SURVEY does not exist");
+        }
+        throw new IOException("The external storage is not available for writing");
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
