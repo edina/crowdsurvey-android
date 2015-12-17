@@ -14,40 +14,26 @@ public class ParseSurvey {
 
         List<SurveyField> surveyFields = new ArrayList<>();
         List<Map<String, Object>> fields = surveyModel.getFields();
+
+
+        SurveyFieldImpl.RecordFieldBuilder recordFieldBuilder = new SurveyFieldImpl.RecordFieldBuilder();
+
+
         for (Map<String, Object> map : fields) {
 
-            SurveyFieldImpl.RecordFieldBuilder surveyField = new SurveyFieldImpl.RecordFieldBuilder();
-            for (Map.Entry<String, Object> field : map.entrySet()) {
-                String key = field.getKey();
-                Object value = field.getValue();
+            SurveyFieldImpl.RecordFieldBuilder surveyFieldBuilder = new SurveyFieldImpl.RecordFieldBuilder();
 
 
-                switch (key) {
+                SurveyField surveyField = surveyFieldBuilder
+                        .id(map.get(SurveyField.ID_TOKEN).toString())
+                        .type(map.get(SurveyField.TYPE_TOKEN).toString())
+                        .label(map.get(SurveyField.LABEL_TOKEN).toString())
+                        .required(Boolean.valueOf(map.get(SurveyField.REQUIRED_TOKEN).toString()))
+                        .persistent(Boolean.valueOf(map.get(SurveyField.PERSISTENT_TOKEN).toString()))
+                        .properties(buildFieldProperties((Map<String, Object>) map.get(SurveyField.PROPERTIES_TOKEN)))
+                        .build() ;
 
-                    case "id":
-                        surveyField.id(value.toString());
-                        break;
-                    case "type":
-                        surveyField.type(value.toString());
-                        break;
-                    case "label":
-                        surveyField.label(value.toString());
-                        break;
-                    case "required":
-                        surveyField.required(Boolean.valueOf(value.toString()));
-                        break;
-                    case "persistent":
-                        surveyField.persistent(Boolean.valueOf(value.toString()));
-                        break;
-                    case "properties":
-                        surveyField.properties(buildFieldProperties((Map<String, Object>) value));
-                        break;
-
-
-                }
-
-            }
-            surveyFields.add(surveyField.build());
+                 surveyFields.add(surveyField);
 
 
         }
@@ -56,22 +42,14 @@ public class ParseSurvey {
 
 
     private SurveyFieldProperties buildFieldProperties(Map<String, Object> properties) {
-        SurveyFieldPropertiesImpl.SurveyFieldPropertiesBuilder fieldProperties = new SurveyFieldPropertiesImpl.SurveyFieldPropertiesBuilder();
-        for (Map.Entry<String, Object> field : properties.entrySet()) {
-            String key = field.getKey();
-            Object value = field.getValue();
 
-            switch (key) {
-                case "other":
-                    fieldProperties.other(Boolean.valueOf(value.toString()));
-                    break;
-                case "options":
-                    fieldProperties.options(buildOptions((List<Object>)value));
-                    break;
-            }
-        }
+        SurveyFieldPropertiesImpl.SurveyFieldPropertiesBuilder surveyFieldPropertiesBuilder = new SurveyFieldPropertiesImpl.SurveyFieldPropertiesBuilder();
 
-        return fieldProperties.build();
+
+        return surveyFieldPropertiesBuilder
+                .other(Boolean.valueOf(properties.get(SurveyFieldProperties.OTHER_TOKEN).toString()))
+                .options(buildOptions( (List<Object>) properties.get(SurveyFieldProperties.OPTIONS_TOKEN) ))
+                .build() ;
 
     }
 
