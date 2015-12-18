@@ -4,7 +4,6 @@
 
     <item android:title="Records">
         <menu>
-
            <item android:id="@+id/show_records" android:icon="@drawable/ic_action_pin_drop"
             android:title="Show Records" />
            <item android:id="@+id/upload_records" android:icon="@drawable/ic_action_cloud_upload"
@@ -14,6 +13,7 @@
             <item android:id="@+id/delete_records" android:icon="@drawable/ic_action_delete"
             android:title="Delete Record..." />
             <item android:id="@+id/take_photo" android:title="Take a photo" />
+            <item android:id="@+id/choose_gallery" android:title="Choose from Gallery" />
         </menu>
     </item>
 

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -53,8 +54,9 @@ public class FieldTripMap extends AppCompatActivity
     private Database database;
     private Manager manager;
 
-    //Camera properties
+    //Request codes for child activities
     private int REQUEST_IMAGE_CAPTURE = 100;
+    private int REQUEST_LOAD_IMAGE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -244,6 +246,8 @@ public class FieldTripMap extends AppCompatActivity
 
         } else if (id == R.id.take_photo) {
             this.takePhoto();
+        } else if (id == R.id.choose_gallery){
+            this.chooseFromGallery();
         }
         else if (id == R.id.show_tracks) {
 
@@ -298,6 +302,18 @@ public class FieldTripMap extends AppCompatActivity
         }
         throw new IOException("The external storage is not available for writing");
     }
+
+    /**
+     * Open Image application for images located under external storage.
+     */
+    private void chooseFromGallery(){
+        Intent intent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivityForResult(intent, REQUEST_LOAD_IMAGE);
+        }
+        else
+            Log.d(LOG_TAG,"There is no activity to handle Pick an item from the data");
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_IMAGE_CAPTURE){
@@ -305,6 +321,15 @@ public class FieldTripMap extends AppCompatActivity
                 Log.d(LOG_TAG,"takePicture result OK");
             else if(resultCode == RESULT_CANCELED)
                 Log.d(LOG_TAG,"takePicture result CANCEL. Picture might be taken but cancelled later");
+        }
+        else if(requestCode == REQUEST_LOAD_IMAGE){
+            if(resultCode == RESULT_OK){
+                Uri uri = data.getData();
+                Log.d(LOG_TAG,"Image has been loaded from "+uri.getPath());
+            }
+            else if(resultCode == RESULT_CANCELED){
+                Log.d(LOG_TAG,"No image has been chosen");
+            }
         }
     }
 }
