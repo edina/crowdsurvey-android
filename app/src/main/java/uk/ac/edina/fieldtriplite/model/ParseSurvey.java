@@ -25,11 +25,11 @@ public class ParseSurvey {
 
 
                 SurveyField surveyField = surveyFieldBuilder
-                        .id(map.get(SurveyField.ID_TOKEN).toString())
-                        .type(map.get(SurveyField.TYPE_TOKEN).toString())
-                        .label(map.get(SurveyField.LABEL_TOKEN).toString())
-                        .required(Boolean.valueOf(map.get(SurveyField.REQUIRED_TOKEN).toString()))
-                        .persistent(Boolean.valueOf(map.get(SurveyField.PERSISTENT_TOKEN).toString()))
+                        .id(coerceToString(map.get(SurveyField.ID_TOKEN)))
+                        .type(coerceToString(map.get(SurveyField.TYPE_TOKEN)))
+                        .label(coerceToString(map.get(SurveyField.LABEL_TOKEN)))
+                        .required(coerceToBoolean(map.get(SurveyField.REQUIRED_TOKEN)))
+                        .persistent(coerceToBoolean(map.get(SurveyField.PERSISTENT_TOKEN)))
                         .properties(buildFieldProperties((Map<String, Object>) map.get(SurveyField.PROPERTIES_TOKEN)))
                         .build() ;
 
@@ -41,13 +41,15 @@ public class ParseSurvey {
     }
 
 
+
+
     private SurveyFieldProperties buildFieldProperties(Map<String, Object> properties) {
 
         SurveyFieldPropertiesImpl.SurveyFieldPropertiesBuilder surveyFieldPropertiesBuilder = new SurveyFieldPropertiesImpl.SurveyFieldPropertiesBuilder();
 
 
         return surveyFieldPropertiesBuilder
-                .other(Boolean.valueOf(properties.get(SurveyFieldProperties.OTHER_TOKEN).toString()))
+                .other(coerceToBoolean(properties.get(SurveyFieldProperties.OTHER_TOKEN)))
                 .options(buildOptions( (List<Object>) properties.get(SurveyFieldProperties.OPTIONS_TOKEN) ))
                 .build() ;
 
@@ -55,7 +57,12 @@ public class ParseSurvey {
 
 
     private List<Option> buildOptions(List<Object> options) {
+
         List<Option> propertyOptions = new ArrayList<>();
+        //boundary
+        if(options == null) {
+            return propertyOptions;
+        }
         for (Object option : options) {
             if(option instanceof String){
                 propertyOptions.add(new OptionImpl(option.toString(), null));
@@ -67,6 +74,13 @@ public class ParseSurvey {
             }
         }
         return propertyOptions;
+    }
+
+    private String coerceToString(Object possibleNullValue){
+        return possibleNullValue == null ? "" : possibleNullValue.toString();
+    }
+    private Boolean coerceToBoolean(Object possibleNullValue){
+        return possibleNullValue == null ? Boolean.FALSE : Boolean.valueOf(possibleNullValue.toString());
     }
 
 
