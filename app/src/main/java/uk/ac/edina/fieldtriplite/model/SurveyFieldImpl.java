@@ -60,7 +60,7 @@ public class SurveyFieldImpl implements SurveyField {
     }
 
 
-    public static class RecordFieldBuilder {
+    public static class SurveyFieldBuilder {
         private String id;
 
         private String label;
@@ -73,36 +73,36 @@ public class SurveyFieldImpl implements SurveyField {
 
         private SurveyFieldProperties surveyFieldProperties;
 
-        public RecordFieldBuilder() {
+        public SurveyFieldBuilder() {
         }
 
-        public RecordFieldBuilder id(String id) {
+        public SurveyFieldBuilder id(String id) {
             this.id = id;
             return this;
         }
 
-        public RecordFieldBuilder type(String type) {
+        public SurveyFieldBuilder type(String type) {
             this.type = type;
             return this;
         }
 
-        public RecordFieldBuilder label(String label) {
+        public SurveyFieldBuilder label(String label) {
             this.label = label;
             return this;
         }
 
 
-        public RecordFieldBuilder required(Boolean required) {
+        public SurveyFieldBuilder required(Boolean required) {
             this.required = required;
             return this;
         }
 
-        public RecordFieldBuilder persistent(Boolean persistent) {
+        public SurveyFieldBuilder persistent(Boolean persistent) {
             this.persistent = persistent;
             return this;
         }
 
-        public RecordFieldBuilder properties(SurveyFieldProperties surveyFieldProperties) {
+        public SurveyFieldBuilder properties(SurveyFieldProperties surveyFieldProperties) {
             this.surveyFieldProperties = surveyFieldProperties;
             return this;
         }
