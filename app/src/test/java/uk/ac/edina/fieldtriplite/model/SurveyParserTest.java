@@ -1,7 +1,9 @@
 package uk.ac.edina.fieldtriplite.model;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,6 +81,37 @@ public class SurveyParserTest {
 
     }
 
+    SurveyModel createSurveyModelWithIllegalType(){
+
+        SurveyModel s = new SurveyModel();
+        List<Map<String, Object>> fields = new ArrayList<>();
+
+        Map<String, Object> fieldOne = new HashMap<>();
+        fieldOne.put("id", "form-text-1");
+        fieldOne.put("type", "no there");
+        fieldOne.put("label", "1. Date of survey");
+        fieldOne.put("required", true);
+        fieldOne.put("persistent", true);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("prefix", "record");
+        properties.put("placeholder", "Place default text here (if any)");
+        properties.put("max-chars", "30");
+        properties.put("other", Boolean.TRUE);
+
+        properties.put("options", new ArrayList(){{
+            add( new ArrayList() {{ add("Label"); add("ImageLocation");}});
+            add( new ArrayList() {{ add("Label2"); add("ImageLocation2");}});
+        }});
+
+
+        fieldOne.put("properties", properties);
+
+        fields.add(fieldOne);
+        s.setFields(fields);
+        return s;
+
+    }
+
     @Test
     public void testBuildFields() {
         SurveyParser surveyParser = new SurveyParser();
@@ -87,10 +120,25 @@ public class SurveyParserTest {
         assertEquals(1, surveyFields.size());
         SurveyField surveyField = surveyFields.get(0);
         assertEquals("No id", "form-text-1", surveyField.getId());
-        assertEquals("No type", "text", surveyField.getType());
+        assertEquals("No type", SurveyField.Type.TEXT, surveyField.getType());
         assertEquals("No label", "1. Date of survey", surveyField.getLabel());
         assertEquals("No required", Boolean.TRUE, surveyField.isRequired());
         assertEquals("No persistent", Boolean.TRUE, surveyField.isPersistent());
+    }
+    @Rule
+    public ExpectedException thrown= ExpectedException.none();
+
+    @Test
+    public void testtIllegalTypeOfField() {
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Illegal Survey Field Type");
+
+        SurveyParser surveyParser = new SurveyParser();
+        SurveyModel modelWithIllegalType = createSurveyModelWithIllegalType();
+        List<SurveyField> surveyFields = surveyParser.buildFields(modelWithIllegalType);
+
+
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -166,4 +214,12 @@ public class SurveyParserTest {
         assertEquals("No option Label", "Label2", option2.getLabel());
         assertEquals("No option Image Location", "ImageLocation2", option2.getImageLocation().get());
     }
+
+    @Test
+    public void testVisitSurveyModels(){
+
+        SurveyField surveyField = new SurveyFieldBase.SurveyFieldBuilder().id("testid").label("label").type("text").build();
+
+    }
+
 }

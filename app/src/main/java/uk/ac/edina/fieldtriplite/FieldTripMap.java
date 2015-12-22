@@ -1,29 +1,24 @@
 package uk.ac.edina.fieldtriplite;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.hardware.Camera;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,12 +27,13 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Manager;
 import com.couchbase.lite.android.AndroidContext;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import uk.ac.edina.fieldtriplite.activity.SurveyActivity;
 
 
 public class FieldTripMap extends AppCompatActivity
@@ -260,6 +256,9 @@ public class FieldTripMap extends AppCompatActivity
 
         }else if (id == R.id.pois) {
 
+        } else if (id == R.id.custom_form){
+            Intent customSurveyForm = new Intent(this.getBaseContext(), SurveyActivity.class);
+            this.startActivity(customSurveyForm);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

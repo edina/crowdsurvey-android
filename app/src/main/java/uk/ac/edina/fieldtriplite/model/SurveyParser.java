@@ -16,12 +16,12 @@ public class SurveyParser {
         List<Map<String, Object>> fields = surveyModel.getFields();
 
 
-        SurveyFieldImpl.SurveyFieldBuilder recordFieldBuilder = new SurveyFieldImpl.SurveyFieldBuilder();
+        SurveyFieldBase.SurveyFieldBuilder recordFieldBuilder = new SurveyFieldBase.SurveyFieldBuilder();
 
 
         for (Map<String, Object> map : fields) {
 
-            SurveyFieldImpl.SurveyFieldBuilder surveyFieldBuilder = new SurveyFieldImpl.SurveyFieldBuilder();
+            SurveyFieldBase.SurveyFieldBuilder surveyFieldBuilder = new SurveyFieldBase.SurveyFieldBuilder();
 
 
                 SurveyField surveyField = surveyFieldBuilder

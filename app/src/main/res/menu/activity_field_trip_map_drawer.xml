@@ -14,6 +14,7 @@
             android:title="Delete Record..." />
             <item android:id="@+id/take_photo" android:title="Take a photo" />
             <item android:id="@+id/choose_gallery" android:title="Choose from Gallery" />
+            <item android:id="@+id/custom_form" android:title="Custom Form Demo" />
         </menu>
     </item>
 

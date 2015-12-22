@@ -6,13 +6,13 @@ package uk.ac.edina.fieldtriplite.model;
 
 import com.google.common.base.Strings;
 
-public class SurveyFieldImpl implements SurveyField {
+public abstract class SurveyFieldBase implements SurveyField {
 
     private String id;
 
     private String label;
 
-    private String type;
+    private SurveyField.Type type;
 
     private Boolean required;
 
@@ -20,7 +20,7 @@ public class SurveyFieldImpl implements SurveyField {
 
     private SurveyFieldProperties surveyFieldProperties;
 
-    private SurveyFieldImpl(String id, String label, String type, Boolean required, Boolean persistent, SurveyFieldProperties surveyFieldProperties) {
+    protected SurveyFieldBase(String id, String label, SurveyField.Type type, Boolean required, Boolean persistent, SurveyFieldProperties surveyFieldProperties) {
         this.id = id;
         this.label = label;
         this.type = type;
@@ -45,7 +45,7 @@ public class SurveyFieldImpl implements SurveyField {
     }
 
     @Override
-    public String getType() {
+    public SurveyField.Type getType() {
         return type;
     }
 
@@ -65,7 +65,7 @@ public class SurveyFieldImpl implements SurveyField {
 
         private String label;
 
-        private String type;
+        private SurveyField.Type type;
 
         private Boolean required;
 
@@ -82,7 +82,8 @@ public class SurveyFieldImpl implements SurveyField {
         }
 
         public SurveyFieldBuilder type(String type) {
-            this.type = type;
+
+            this.type = SurveyField.Type.get(type);
             return this;
         }
 
@@ -109,10 +110,23 @@ public class SurveyFieldImpl implements SurveyField {
 
 
         public SurveyField build() {
-            if (Strings.isNullOrEmpty(id) || Strings.isNullOrEmpty(label) || Strings.isNullOrEmpty(type)) {
+            if (Strings.isNullOrEmpty(id) || Strings.isNullOrEmpty(label)) {
                 throw new IllegalArgumentException("Missing required Param for SurveyField");
             }
-            return new SurveyFieldImpl(id, label, type, required, persistent, surveyFieldProperties);
+            SurveyField surveyField = null;
+            switch (type){
+
+                case TEXT:
+                    surveyField = new SurveyTextField(id, label, type, required, persistent, surveyFieldProperties);
+                    break;
+                case RADIO:
+                    surveyField = new SurveyRadioField(id, label, type, required, persistent, surveyFieldProperties);
+                    break;
+
+            }
+
+            return surveyField;
+
         }
 
 
