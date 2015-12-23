@@ -94,7 +94,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
 
         assertNotNull("NO Survey Model returned", surveyModel);
 
-        ParseSurvey parseSurvey = new ParseSurvey();
+        SurveyParser parseSurvey = new SurveyParser();
 
         List<SurveyField> surveyFields = parseSurvey.buildFields(surveyModel);
 

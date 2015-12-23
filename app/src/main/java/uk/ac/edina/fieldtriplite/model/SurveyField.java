@@ -9,7 +9,7 @@ import uk.ac.edina.fieldtriplite.survey.SurveyVisitor;
 /**
  * Created by murrayking on 07/12/2015.
  */
-interface SurveyField {
+public interface SurveyField {
 
     public static final String ID_TOKEN = "id" ;
     public static final String LABEL_TOKEN = "label" ;
@@ -46,7 +46,7 @@ interface SurveyField {
                 return t;
 
             } else {
-                throw new IllegalArgumentException("Illegal Survey Field Type");
+                throw new IllegalArgumentException("Illegal Survey Field Type: " + code);
             }
         }
     }
@@ -65,7 +65,7 @@ interface SurveyField {
     SurveyFieldProperties getSurveyFieldProperties();
 
 
-    void accept(SurveyVisitor vistor);
+    void convert(SurveyVisitor vistor);
 
 
 }

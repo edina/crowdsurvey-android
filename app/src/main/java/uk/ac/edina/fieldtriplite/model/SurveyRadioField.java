@@ -11,7 +11,7 @@ public class SurveyRadioField extends SurveyFieldBase {
     }
 
     @Override
-    public void accept(SurveyVisitor visitor) {
+    public void convert(SurveyVisitor visitor) {
         visitor.visit(this);
     }
 }
