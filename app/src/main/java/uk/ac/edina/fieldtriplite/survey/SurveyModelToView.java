@@ -37,7 +37,5 @@ public class SurveyModelToView implements SurveyVisitor {
 
     }
 
-    public ViewGroup getSurveyView(){
-        return layoutContainer;
-    }
+
 }

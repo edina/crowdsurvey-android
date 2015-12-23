@@ -25,7 +25,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
     RestAdapter adapter;
 
     //String nativeUrl = "http://dlib-rainbow.edina.ac.uk:3000/api";
-    String emulatorUrl = "http://10.0.2.2:3001/api";
+    String emulatorUrl = "http://129.215.169.232:3001/api";
 
     SurveyModel surveyModel;
 
@@ -101,13 +101,13 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
         SurveyField surveyField1 = surveyFields.get(0);
 
         assertEquals("1. Date of survey", surveyField1.getLabel());
-        assertEquals("text", surveyField1.getType());
+        assertEquals(SurveyField.Type.TEXT, surveyField1.getType());
         assertEquals(Boolean.TRUE, surveyField1.isRequired());
         assertEquals(Boolean.TRUE, surveyField1.isPersistent());
         assertEquals("form-text-1", surveyField1.getId());
 
         SurveyFieldProperties surveyFieldProperties = surveyField1.getSurveyFieldProperties();
-        assertEquals("30", surveyFieldProperties.getMax());
+        assertEquals("30", surveyFieldProperties.getMaxChars());
         assertEquals("Place default text here (if any)", surveyFieldProperties.getPlaceholder());
         assertEquals("record", surveyFieldProperties.getPrefix());
         assertEquals(0, signal.getCount());

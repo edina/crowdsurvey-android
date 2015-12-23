@@ -7,13 +7,15 @@ import java.util.List;
  */
 public interface SurveyFieldProperties {
 
-    public static final String OTHER_TOKEN = "other" ;
-    public static final String OPTIONS_TOKEN = "options" ;
-    public static final String MAX_TOKEN = "max" ;
-    public static final String PREFIX_TOKEN = "prefix" ;
-    public static final String RADIOS_TOKEN = "radios" ;
-    public static final String STEP_TOKEN = "step" ;
-    public static final String MIN_TOKEN = "min" ;
+    String OTHER_TOKEN = "other" ;
+    String OPTIONS_TOKEN = "options" ;
+    String MAX_TOKEN = "max" ;
+    String MAX_CHARS_TOKEN = "max-chars";
+    String PREFIX_TOKEN = "prefix" ;
+    String RADIOS_TOKEN = "radios" ;
+    String STEP_TOKEN = "step" ;
+    String MIN_TOKEN = "min" ;
+    String PLACE_HOLDER_TOKEN = "placeholder";
 
     String getMax();
 
@@ -21,7 +23,7 @@ public interface SurveyFieldProperties {
 
     String getPlaceholder();
 
-    Integer getMaxChars();
+    String getMaxChars();
 
     String getPrefix();
 

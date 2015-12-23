@@ -51,7 +51,7 @@ public class SurveyService {
     }
 
     private void liveCall(Context context) {
-        String emulatorUrl = "http://10.0.2.2:3001/api";
+        String emulatorUrl = "http://129.215.169.232:3001/api";
         RestAdapter adapter = new RestAdapter(
                 context, emulatorUrl);
         SurveyModelRepository repository = adapter.createRepository(SurveyModelRepository.class);

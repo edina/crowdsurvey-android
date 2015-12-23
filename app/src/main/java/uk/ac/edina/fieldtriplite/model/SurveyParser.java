@@ -50,7 +50,10 @@ public class SurveyParser {
 
         return surveyFieldPropertiesBuilder
                 .other(coerceToBoolean(properties.get(SurveyFieldProperties.OTHER_TOKEN)))
-                .options(buildOptions( (List<Object>) properties.get(SurveyFieldProperties.OPTIONS_TOKEN) ))
+                .maxChars(coerceToString(properties.get(SurveyFieldProperties.MAX_CHARS_TOKEN)))
+                .placeholder(coerceToString(properties.get(SurveyFieldProperties.PLACE_HOLDER_TOKEN)))
+                .options(buildOptions((List<Object>) properties.get(SurveyFieldProperties.OPTIONS_TOKEN)))
+                .prefix(coerceToString(properties.get(SurveyFieldProperties.PREFIX_TOKEN)))
                 .build() ;
 
     }

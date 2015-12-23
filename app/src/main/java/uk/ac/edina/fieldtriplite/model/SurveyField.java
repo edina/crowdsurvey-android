@@ -11,38 +11,43 @@ import uk.ac.edina.fieldtriplite.survey.SurveyVisitor;
  */
 public interface SurveyField {
 
-    public static final String ID_TOKEN = "id" ;
-    public static final String LABEL_TOKEN = "label" ;
-    public static final String TYPE_TOKEN = "type" ;
-    public static final String REQUIRED_TOKEN = "required" ;
-    public static final String PERSISTENT_TOKEN = "persistent" ;
-    public static final String PROPERTIES_TOKEN = "properties" ;
+    public static final String ID_TOKEN = "id";
+    public static final String LABEL_TOKEN = "label";
+    public static final String TYPE_TOKEN = "type";
+    public static final String REQUIRED_TOKEN = "required";
+    public static final String PERSISTENT_TOKEN = "persistent";
+    public static final String PROPERTIES_TOKEN = "properties";
 
-     enum Type{
+    enum Type {
         TEXT("text"),
         RADIO("radio"),
         SELECT("select"),
-        RANGE("range");
+        RANGE("range"),
+        DTREE("dtree"),
+        WARNING("warning"),
+        CHECKBOX("checkbox");
 
-        private static final Map<String,Type> lookup = new HashMap<>();
+        private static final Map<String, Type> lookup = new HashMap<>();
 
         static {
-            for(Type s : EnumSet.allOf(Type.class))
+            for (Type s : EnumSet.allOf(Type.class))
                 lookup.put(s.getCode(), s);
         }
 
         private String code;
 
 
-         Type(String code) {
+        Type(String code) {
             this.code = code;
         }
 
-        public String getCode() { return code; }
+        public String getCode() {
+            return code;
+        }
 
         public static Type get(String code) {
-            Type t =  lookup.get(code);
-            if(t != null ){
+            Type t = lookup.get(code);
+            if (t != null) {
                 return t;
 
             } else {

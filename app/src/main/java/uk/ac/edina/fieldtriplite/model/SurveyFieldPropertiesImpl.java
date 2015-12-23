@@ -9,7 +9,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
 
     private Boolean other;
     private String placeholder;
-    private Integer maxChars;
+    private String maxChars;
     private String prefix;
     private List<Option> options;
     private List<Option> radios;
@@ -33,7 +33,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
     }
 
     @Override
-    public Integer getMaxChars() {
+    public String getMaxChars() {
         return maxChars;
     }
 
@@ -62,7 +62,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
         return min;
     }
 
-    private SurveyFieldPropertiesImpl(Boolean other, String placeholder, Integer maxChars, String prefix,
+    private SurveyFieldPropertiesImpl(Boolean other, String placeholder, String maxChars, String prefix,
                                       List<Option> options, List<Option> radios, String step, String min, String max) {
         this.other = other;
         this.placeholder = placeholder;
@@ -79,7 +79,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
 
         private Boolean other;
         private String placeholder;
-        private Integer maxChars;
+        private String maxChars;
         private String prefix;
         private List<Option> options;
         private List<Option> radios;
@@ -102,7 +102,8 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
             return this;
         }
 
-        public SurveyFieldPropertiesBuilder maxChars(Integer maxChars) {
+        public SurveyFieldPropertiesBuilder maxChars(String maxChars) {
+
             this.maxChars = maxChars;
             return this;
         }
