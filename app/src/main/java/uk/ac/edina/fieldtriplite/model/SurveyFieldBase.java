@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 
 public abstract class SurveyFieldBase implements SurveyField {
 
+
     private String id;
 
     private String label;
@@ -20,13 +21,16 @@ public abstract class SurveyFieldBase implements SurveyField {
 
     private SurveyFieldProperties surveyFieldProperties;
 
-    protected SurveyFieldBase(String id, String label, SurveyField.Type type, Boolean required, Boolean persistent, SurveyFieldProperties surveyFieldProperties) {
+    private int formId;
+
+    protected SurveyFieldBase(String id, String label, Type type, Boolean required, Boolean persistent, SurveyFieldProperties surveyFieldProperties, int formId) {
         this.id = id;
         this.label = label;
         this.type = type;
         this.required = required;
         this.persistent = persistent;
         this.surveyFieldProperties = surveyFieldProperties;
+        this.formId = formId;
     }
 
     @Override
@@ -42,6 +46,11 @@ public abstract class SurveyFieldBase implements SurveyField {
     @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public int getFormId() {
+        return formId;
     }
 
     @Override
@@ -72,6 +81,8 @@ public abstract class SurveyFieldBase implements SurveyField {
         private Boolean persistent;
 
         private SurveyFieldProperties surveyFieldProperties;
+
+        private int formId;
 
         public SurveyFieldBuilder() {
         }
@@ -108,6 +119,11 @@ public abstract class SurveyFieldBase implements SurveyField {
             return this;
         }
 
+        public SurveyFieldBuilder formId(int formId) {
+            this.formId = formId;
+            return this;
+        }
+
 
         public SurveyField build() {
             if (Strings.isNullOrEmpty(id) || Strings.isNullOrEmpty(label)) {
@@ -117,10 +133,10 @@ public abstract class SurveyFieldBase implements SurveyField {
             switch (type){
 
                 case TEXT:
-                    surveyField = new SurveyTextField(id, label, type, required, persistent, surveyFieldProperties);
+                    surveyField = new SurveyTextField(id, label, type, required, persistent, surveyFieldProperties, formId);
                     break;
                 case RADIO:
-                    surveyField = new SurveyRadioField(id, label, type, required, persistent, surveyFieldProperties);
+                    surveyField = new SurveyRadioField(id, label, type, required, persistent, surveyFieldProperties, formId);
                     break;
 
             }

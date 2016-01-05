@@ -61,6 +61,8 @@ public interface SurveyField {
 
     String getLabel();
 
+    int getFormId();
+
     SurveyField.Type getType();
 
     Boolean isRequired();
@@ -71,6 +73,8 @@ public interface SurveyField {
 
 
     void convertToView(SurveyVisitor vistor);
+
+    void convertToRecord(SurveyVisitor visitor);
 
 
 }

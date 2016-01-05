@@ -52,4 +52,13 @@ public class RecordField {
     public void setLabel(String label) {
         this.label = label;
     }
+
+    @Override
+    public String toString() {
+        return "RecordField{" +
+                "id='" + id + '\'' +
+                ", val=" + val +
+                ", label='" + label + '\'' +
+                '}';
+    }
 }

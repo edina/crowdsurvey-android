@@ -1,9 +1,7 @@
 package uk.ac.edina.fieldtriplite.survey;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.design.widget.TextInputLayout;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -27,10 +25,10 @@ public class SurveyModelToView implements SurveyVisitor {
     public void visit(final SurveyTextField field) {
 
         TextInputLayout dynamic = new TextInputLayout(context);
-        dynamic.setId(666);
+
         dynamic.setHint(field.getLabel());
         EditText dynamicEditText = new EditText(context);
-
+        dynamicEditText.setId(field.getFormId());
         dynamic.addView(dynamicEditText, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         layoutContainer.addView(dynamic, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -38,6 +36,7 @@ public class SurveyModelToView implements SurveyVisitor {
 
     @Override
     public void visit(SurveyRadioField field) {
+
 
     }
 

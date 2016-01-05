@@ -44,4 +44,13 @@ public class RecordModel extends GeoJSONModel {
     public List<RecordField> getRecordFields() {
         return fields;
     }
+
+    @Override
+    public String toString() {
+        return "RecordModel{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", fields=" + fields +
+                '}';
+    }
 }

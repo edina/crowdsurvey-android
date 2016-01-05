@@ -13,11 +13,13 @@ import com.strongloop.android.loopback.callbacks.ObjectCallback;
 import java.util.List;
 
 import uk.ac.edina.fieldtriplite.R;
+import uk.ac.edina.fieldtriplite.model.RecordModel;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.model.SurveyParser;
 import uk.ac.edina.fieldtriplite.service.SurveyService;
 import uk.ac.edina.fieldtriplite.survey.SurveyModelToView;
+import uk.ac.edina.fieldtriplite.survey.SurveyViewToRecord;
 
 public class SurveyActivity extends AppCompatActivity {
 
@@ -72,6 +74,16 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void saveRecord() {
+
+        SurveyViewToRecord surveyViewToRecord = new SurveyViewToRecord(container);
+
+        for(SurveyField f : surveyFields) {
+            f.convertToRecord(surveyViewToRecord);
+        }
+
+        RecordModel record = surveyViewToRecord.getRecordModel();
+        Log.d("SurveyModel", record.toString());
+        //Document document = Record.putRecord(database, record);
 
     }
 

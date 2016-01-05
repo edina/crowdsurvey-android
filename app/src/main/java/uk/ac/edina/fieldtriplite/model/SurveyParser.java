@@ -5,6 +5,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by murray on 08/12/15.
@@ -17,8 +18,6 @@ public class SurveyParser {
         List<SurveyField> surveyFields = new ArrayList<>();
         List<Map<String, Object>> fields = surveyModel.getFields();
 
-
-        SurveyFieldBase.SurveyFieldBuilder recordFieldBuilder = new SurveyFieldBase.SurveyFieldBuilder();
 
 
         for (Map<String, Object> map : fields) {
@@ -33,6 +32,7 @@ public class SurveyParser {
                         .required(coerceToBoolean(map.get(SurveyField.REQUIRED_TOKEN)))
                         .persistent(coerceToBoolean(map.get(SurveyField.PERSISTENT_TOKEN)))
                         .properties(buildFieldProperties((Map<String, Object>) map.get(SurveyField.PROPERTIES_TOKEN)))
+                        .formId(getNoCollisionFormId())
                         .build() ;
                 if(surveyField != null) {
                     surveyFields.add(surveyField);
@@ -44,7 +44,11 @@ public class SurveyParser {
         return surveyFields;
     }
 
-
+    private int getNoCollisionFormId() {
+        Random ran = new Random();
+        int startAt = 10000;
+        return ran.nextInt(Integer.MAX_VALUE - startAt) + startAt;
+    }
 
 
     private SurveyFieldProperties buildFieldProperties(Map<String, Object> properties) {
