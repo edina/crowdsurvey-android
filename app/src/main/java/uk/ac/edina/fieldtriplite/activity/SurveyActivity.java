@@ -3,6 +3,9 @@ package uk.ac.edina.fieldtriplite.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
@@ -51,8 +54,26 @@ public class SurveyActivity extends AppCompatActivity {
             for (SurveyField field : surveyFields) {
                 field.convertToView(surveyModelToView);
             }
+            addSaveRecordButton();
         }
-    };
+    }
+
+    private void addSaveRecordButton() {
+        Button submitButton = new Button(SurveyActivity.this);
+        submitButton.setText("Submit");
+        container.addView(submitButton, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveRecord();
+            }
+        });
+
+    }
+
+    private void saveRecord() {
+
+    }
 
 
     @Override

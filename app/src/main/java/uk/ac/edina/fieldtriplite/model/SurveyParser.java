@@ -1,5 +1,7 @@
 package uk.ac.edina.fieldtriplite.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +34,11 @@ public class SurveyParser {
                         .persistent(coerceToBoolean(map.get(SurveyField.PERSISTENT_TOKEN)))
                         .properties(buildFieldProperties((Map<String, Object>) map.get(SurveyField.PROPERTIES_TOKEN)))
                         .build() ;
-
-                 surveyFields.add(surveyField);
-
+                if(surveyField != null) {
+                    surveyFields.add(surveyField);
+                } else {
+                    Log.e(SurveyParser.class.getSimpleName(), "Error creating survey field");
+                }
 
         }
         return surveyFields;

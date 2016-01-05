@@ -2,7 +2,6 @@ package uk.ac.edina.fieldtriplite.service;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import com.strongloop.android.loopback.RestAdapter;
@@ -13,11 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.model.SurveyModelRepository;
-import uk.ac.edina.fieldtriplite.model.SurveyParser;
-import uk.ac.edina.fieldtriplite.survey.SurveyModelToView;
 
 /**
  * Created by murrayking on 23/12/2015.
@@ -68,11 +64,11 @@ public class SurveyService {
     }
 
     private void liveCall(Context context, ObjectCallback<SurveyModel> callback) {
-        String emulatorUrl = "http://10.0.2.2:3000/api";
+        String emulatorUrl = "http://129.215.169.232:3001/api";
         RestAdapter adapter = new RestAdapter(
                 context, emulatorUrl);
         SurveyModelRepository repository = adapter.createRepository(SurveyModelRepository.class);
-        String surveyId = "1";
+        String surveyId = "566ed9b30351d817555158cd";
         repository.findById(surveyId, callback);
     }
 
