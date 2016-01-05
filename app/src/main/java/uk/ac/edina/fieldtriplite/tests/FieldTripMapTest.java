@@ -69,50 +69,6 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
 
     }
 
-    /**
-     * Test the initialization of the database
-     */
-    public void testDatabaseInitialization() {
-        Database database = mFieldTripMapActivity.getDatabase();
-
-        assertNotNull(database);
-    }
-
-    /**
-     * Test storing a record in the database
-     */
-    public void testDatabasePutRecord() {
-        Database database = mFieldTripMapActivity.getDatabase();
-        RecordModel record = new RecordModel();
-
-        try {
-            Document document = Record.putRecord(database, new RecordModel());
-            assertNotNull(document);
-        } catch (CouchbaseLiteException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /**
-     * Test store and retrieve a record in the database
-     */
-    public void testDatabaseGetRecord() {
-        Database database = mFieldTripMapActivity.getDatabase();
-        try {
-            RecordModel record = new RecordModel();
-            record.setId("89be54fd-f559-4c36-80d0-721035dd17c8");
-            Document document = Record.putRecord(database, record);
-            assertNotNull(document);
-
-            RecordModel retrievedRecord = Record.getRecord(database, document.getId());
-            assertNotNull(retrievedRecord);
-
-            assertEquals(record.getId(), retrievedRecord.getId());
-        } catch (CouchbaseLiteException e) {
-            fail(e.getMessage());
-        }
-    }
-
 
 
            public void testPreconditions() {

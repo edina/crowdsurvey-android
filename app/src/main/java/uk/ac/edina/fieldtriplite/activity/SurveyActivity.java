@@ -8,11 +8,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.couchbase.lite.CouchbaseLiteException;
+import com.couchbase.lite.Document;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 import java.util.List;
 
+import uk.ac.edina.fieldtriplite.FieldTripApplication;
 import uk.ac.edina.fieldtriplite.R;
+import uk.ac.edina.fieldtriplite.document.Record;
 import uk.ac.edina.fieldtriplite.model.RecordModel;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
@@ -23,6 +27,7 @@ import uk.ac.edina.fieldtriplite.survey.SurveyViewToRecord;
 
 public class SurveyActivity extends AppCompatActivity {
 
+    public static final String LOG_TAG = "SurveyModel";
     private List<SurveyField> surveyFields;
     private LinearLayout container;
     class SurveyModelCallBack implements ObjectCallback<SurveyModel>{
@@ -82,8 +87,13 @@ public class SurveyActivity extends AppCompatActivity {
         }
 
         RecordModel record = surveyViewToRecord.getRecordModel();
-        Log.d("SurveyModel", record.toString());
-        //Document document = Record.putRecord(database, record);
+        Log.d(LOG_TAG, record.toString());
+        FieldTripApplication application = (FieldTripApplication) this.getApplicationContext();
+        try {
+            Document document = Record.putRecord(application.getDatabase(), record);
+        } catch (CouchbaseLiteException e) {
+            Log.e(LOG_TAG,"Unable to save record" + e.toString());
+        }
 
     }
 
