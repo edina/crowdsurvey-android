@@ -26,7 +26,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
 
     //String nativeUrl = "http://dlib-rainbow.edina.ac.uk:3000/api";
     String emulatorUrl = "http://129.215.169.232:3001/api";
-
+    String emulatorToLocalHost = "http://10.0.2.2:3000/api";
     SurveyModel surveyModel;
 
 
@@ -55,7 +55,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
         mockContext = fieldTripMapActivity.getApplicationContext();
         assertNotNull(mockContext);
         adapter = new RestAdapter(
-                mockContext, emulatorUrl);
+                mockContext, emulatorToLocalHost);
 
     }
 
@@ -69,7 +69,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
             public void run() {
                 SurveyModelRepository repository = adapter.createRepository(SurveyModelRepository.class);
 
-                repository.findById("566ed9b30351d817555158cd", new ObjectCallback<SurveyModel>() {
+                repository.findById("1", new ObjectCallback<SurveyModel>() {
                     @Override
                     public void onSuccess(SurveyModel object) {
                         Log.d("SurveyModel", object.toString());

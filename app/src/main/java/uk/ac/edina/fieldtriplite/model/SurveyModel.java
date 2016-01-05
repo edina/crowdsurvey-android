@@ -28,4 +28,12 @@ public class SurveyModel extends Model {
     public void setFields(List<Map<String, Object>> fields) {
         this.fields = fields;
     }
+
+    @Override
+    public String toString() {
+        return "SurveyModel{" +
+                "id='" + id + '\'' +
+                ", fields=" + fields +
+                '}';
+    }
 }

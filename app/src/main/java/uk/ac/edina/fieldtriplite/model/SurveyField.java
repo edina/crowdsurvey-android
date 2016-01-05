@@ -70,7 +70,7 @@ public interface SurveyField {
     SurveyFieldProperties getSurveyFieldProperties();
 
 
-    void convert(SurveyVisitor vistor);
+    void convertToView(SurveyVisitor vistor);
 
 
 }

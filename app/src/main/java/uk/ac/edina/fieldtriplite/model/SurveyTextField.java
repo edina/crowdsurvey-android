@@ -11,7 +11,7 @@ public class SurveyTextField extends SurveyFieldBase {
     }
 
     @Override
-    public void convert(SurveyVisitor visitor) {
+    public void convertToView(SurveyVisitor visitor) {
         visitor.visit(this);
     }
 }
