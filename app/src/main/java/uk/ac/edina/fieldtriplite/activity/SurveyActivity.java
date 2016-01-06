@@ -22,14 +22,23 @@ import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.model.SurveyParser;
 import uk.ac.edina.fieldtriplite.service.SurveyService;
+import uk.ac.edina.fieldtriplite.service.SurveyServiceImpl;
 import uk.ac.edina.fieldtriplite.survey.SurveyModelToView;
 import uk.ac.edina.fieldtriplite.survey.SurveyViewToRecord;
 
 public class SurveyActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = "SurveyModel";
+
+
     private List<SurveyField> surveyFields;
     private LinearLayout container;
+
+
+
+    private SurveyService surveyService = new SurveyServiceImpl();
+
+
     class SurveyModelCallBack implements ObjectCallback<SurveyModel>{
 
         @Override
@@ -92,7 +101,7 @@ public class SurveyActivity extends AppCompatActivity {
         try {
             Document document = Record.putRecord(application.getDatabase(), record);
         } catch (CouchbaseLiteException e) {
-            Log.e(LOG_TAG,"Unable to save record" + e.toString());
+            Log.e(LOG_TAG, "Unable to save record" + e.toString());
         }
 
     }
@@ -103,11 +112,18 @@ public class SurveyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
         container = (LinearLayout)findViewById(R.id.viewToAddTo);
-        SurveyService surveyService = new SurveyService();
 
         surveyService.getCustomSurvey(this, new SurveyModelCallBack());
 
     }
 
 
+
+    public List<SurveyField> getSurveyFields() {
+        return surveyFields;
+    }
+
+    public void setSurveyService(SurveyService surveyService) {
+        this.surveyService = surveyService;
+    }
 }
