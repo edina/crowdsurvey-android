@@ -12,7 +12,7 @@ import uk.ac.edina.fieldtriplite.model.SurveyTextField;
  * Created by murrayking on 22/12/2015.
  */
 public class SurveyViewToRecord implements SurveyVisitor {
-    private  RecordModel model;
+    private RecordModel model;
     private ViewGroup container;
 
 
