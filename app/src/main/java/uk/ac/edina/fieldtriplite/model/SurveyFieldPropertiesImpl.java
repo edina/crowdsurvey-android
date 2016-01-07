@@ -1,5 +1,7 @@
 package uk.ac.edina.fieldtriplite.model;
 
+import com.google.common.base.Strings;
+
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
 
     private Boolean other;
     private String placeholder;
-    private String maxChars;
+    private Integer maxChars;
     private String prefix;
     private List<Option> options;
     private List<Option> radios;
@@ -33,7 +35,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
     }
 
     @Override
-    public String getMaxChars() {
+    public Integer getMaxChars() {
         return maxChars;
     }
 
@@ -62,7 +64,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
         return min;
     }
 
-    private SurveyFieldPropertiesImpl(Boolean other, String placeholder, String maxChars, String prefix,
+    private SurveyFieldPropertiesImpl(Boolean other, String placeholder, Integer maxChars, String prefix,
                                       List<Option> options, List<Option> radios, String step, String min, String max) {
         this.other = other;
         this.placeholder = placeholder;
@@ -79,7 +81,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
 
         private Boolean other;
         private String placeholder;
-        private String maxChars;
+        private Integer maxChars;
         private String prefix;
         private List<Option> options;
         private List<Option> radios;
@@ -103,8 +105,9 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
         }
 
         public SurveyFieldPropertiesBuilder maxChars(String maxChars) {
-
-            this.maxChars = maxChars;
+            if(!Strings.isNullOrEmpty(maxChars)){
+                this.maxChars = Integer.valueOf(maxChars);
+            }
             return this;
         }
 
@@ -146,6 +149,7 @@ public class SurveyFieldPropertiesImpl implements SurveyFieldProperties {
         }
 
     }
+
 
 
 }

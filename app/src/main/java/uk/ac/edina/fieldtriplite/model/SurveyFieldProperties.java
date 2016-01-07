@@ -23,7 +23,7 @@ public interface SurveyFieldProperties {
 
     String getPlaceholder();
 
-    String getMaxChars();
+    Integer getMaxChars();
 
     String getPrefix();
 
