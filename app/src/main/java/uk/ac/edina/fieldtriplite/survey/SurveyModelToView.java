@@ -25,10 +25,12 @@ public class SurveyModelToView implements SurveyVisitor {
     public void visit(final SurveyTextField field) {
 
         TextInputLayout dynamic = new TextInputLayout(context);
+        String maxChars = field.getSurveyFieldProperties().getMaxChars();
 
-        dynamic.setHint(field.getLabel());
         EditText dynamicEditText = new EditText(context);
+        dynamicEditText.setHint(field.getLabel());
         dynamicEditText.setId(field.getFormId());
+
         dynamic.addView(dynamicEditText, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         layoutContainer.addView(dynamic, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 

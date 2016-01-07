@@ -1,10 +1,8 @@
 package uk.ac.edina.fieldtriplite.activity;
 
 import android.app.Activity;
-import android.support.design.widget.TextInputLayout;
 import android.support.test.rule.ActivityTestRule;
 import android.test.ActivityInstrumentationTestCase2;
-import android.widget.EditText;
 
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
@@ -17,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.edina.fieldtriplite.matchers.TextInputLayoutHintMatcher;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.service.SurveyService;
@@ -26,10 +25,9 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by murray on 26/12/15.
@@ -60,9 +58,7 @@ public class SurveyActivityTest {
 
     @Test
     public void changeTextInFirstTextField() {
-        SurveyActivity surveyActivity = activityRule.getActivity();
-
-        List<SurveyField> surveyFields = surveyActivity.getSurveyFields();
+        List<SurveyField> surveyFields = getSurveyFields();
         SurveyField firstTextField = surveyFields.get(0);
 
         onView(withId(firstTextField.getFormId())).check(matches(isDisplayed()));
@@ -81,15 +77,35 @@ public class SurveyActivityTest {
     }
 
     @Test
-    public void testHintTextOnFirstField(){
+    public void testHintTextOnFirstField()  {
+        List<SurveyField> surveyFields = getSurveyFields();
+        SurveyField firstTextField = surveyFields.get(0);
+
+        onView(withChild(withId(firstTextField.getFormId()))).check(matches(TextInputLayoutHintMatcher.withHint("1. Date of survey")));
+
+
+
+    }
+
+    /**
+     * Thread issue on rooted device add a short sleep if required
+     * @return List<SurveyField>
+     * @throws InterruptedException
+     */
+    private List<SurveyField> getSurveyFields() {
         SurveyActivity surveyActivity = activityRule.getActivity();
 
         List<SurveyField> surveyFields = surveyActivity.getSurveyFields();
-        SurveyField firstTextField = surveyFields.get(0);
-        EditText materialDesignEditBox = (EditText) activityRule.getActivity().findViewById(firstTextField.getFormId());
-        assertNotNull(materialDesignEditBox);
-        TextInputLayout textInputLayout = (TextInputLayout)materialDesignEditBox.getParent();
-        assertEquals("1. Date of survey", textInputLayout.getHint());
+
+        if (surveyFields == null){
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ignored) {
+
+            }
+            surveyFields = surveyActivity.getSurveyFields();
+        }
+        return surveyFields;
     }
 
     class SurveyServiceMock implements SurveyService {
