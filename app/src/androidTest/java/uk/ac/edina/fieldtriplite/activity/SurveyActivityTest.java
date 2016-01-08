@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.edina.fieldtriplite.matchers.ErrorMessageMatcher;
 import uk.ac.edina.fieldtriplite.matchers.TextInputLayoutHintMatcher;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
@@ -33,7 +34,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
  * Created by murray on 26/12/15.
  */
 public class SurveyActivityTest {
+
     private static final String STRING_TO_BE_TYPED = "test";
+
+    private static final String MAX_CHARS_TEST = "1234567";
     /**
      * A JUnit {@link Rule @Rule} to launch your activity under test. This is a replacement
      * for {@link ActivityInstrumentationTestCase2}.
@@ -44,6 +48,7 @@ public class SurveyActivityTest {
      * {@link ActivityTestRule} will create and launch of the activity for you and also expose
      * the activity under test. To get a reference to the activity you can use
      * the {@link ActivityTestRule#getActivity()} method.
+
      */
     @Rule
     public ActivityTestRule<SurveyActivity> activityRule = new ActivityTestRule<>(
@@ -81,7 +86,21 @@ public class SurveyActivityTest {
         List<SurveyField> surveyFields = getSurveyFields();
         SurveyField firstTextField = surveyFields.get(0);
 
-        onView(withChild(withId(firstTextField.getFormId()))).check(matches(TextInputLayoutHintMatcher.withHint("1. Date of survey")));
+        onView(withChild(withId(firstTextField.getFormId())))
+                .check(matches(TextInputLayoutHintMatcher.withHint("1. Date of survey")));
+
+
+
+    }
+
+    @Test
+    public void testMaxCharsValidationError()  {
+        List<SurveyField> surveyFields = getSurveyFields();
+        SurveyField firstTextField = surveyFields.get(0);
+
+        onView(withId(firstTextField.getFormId()))
+                .perform(typeText(MAX_CHARS_TEST))
+                .check(matches(ErrorMessageMatcher.hasErrorText("Too Long only 5 allowed")));
 
 
 
@@ -125,7 +144,7 @@ public class SurveyActivityTest {
             Map<String, Object> properties = new HashMap<>();
             properties.put("prefix", "record");
             properties.put("placeholder", "Place default text here (if any)");
-            properties.put("max-chars", "30");
+            properties.put("max-chars", "5");
             properties.put("other", Boolean.TRUE);
 
             properties.put("options", new ArrayList() {{
