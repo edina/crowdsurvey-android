@@ -5,6 +5,7 @@ import android.widget.EditText;
 
 import uk.ac.edina.fieldtriplite.model.RecordField;
 import uk.ac.edina.fieldtriplite.model.RecordModel;
+import uk.ac.edina.fieldtriplite.model.SurveyImageField;
 import uk.ac.edina.fieldtriplite.model.SurveyRadioField;
 import uk.ac.edina.fieldtriplite.model.SurveyTextField;
 
@@ -37,9 +38,16 @@ public class SurveyViewToRecord implements SurveyVisitor {
 
     }
 
+    @Override
+    public void visit(SurveyImageField field) {
+
+
+    }
+
     public RecordModel getRecordModel(){
         return model;
     }
+
 
 
 }

@@ -112,6 +112,59 @@ public class SurveyParserTest {
 
     }
 
+
+    SurveyModel createSurveyModelWithImageField(){
+
+        SurveyModel s = new SurveyModel();
+        List<Map<String, Object>> fields = new ArrayList<>();
+
+        Map<String, Object> fieldOne = new HashMap<>();
+        fieldOne.put("id", "form-text-1");
+        fieldOne.put("type", "text");
+        fieldOne.put("label", "1. Date of survey");
+        fieldOne.put("required", true);
+        fieldOne.put("persistent", true);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("prefix", "record");
+        properties.put("placeholder", "Place default text here (if any)");
+        properties.put("max-chars", "30");
+        properties.put("other", Boolean.TRUE);
+
+        properties.put("options", new ArrayList(){{
+            add( new ArrayList() {{ add("Label"); add("ImageLocation");}});
+            add( new ArrayList() {{ add("Label2"); add("ImageLocation2");}});
+        }});
+
+
+        fieldOne.put("properties", properties);
+        /*
+        "id": "form-image-1",
+                "type": "image",
+                "label": "Take a photo",
+                "required": true,
+                "persistent": false,
+                "properties": {
+            "los": false,
+                    "multi-image": false
+        }*/
+        Map<String, Object> fieldTwo = new HashMap<>();
+        fieldOne.put("id", "form-image-1");
+        fieldOne.put("type", "image");
+        fieldOne.put("label", "Take a photo");
+        fieldOne.put("required", true);
+        fieldOne.put("persistent", false);
+
+
+        Map<String, Object> fieldTwoProperties = new HashMap<>();
+        fieldTwoProperties.put("los", false);
+        fieldTwoProperties.put("multi-image", false);
+        fields.add(fieldOne);
+        fields.add(fieldTwo);
+        s.setFields(fields);
+        return s;
+
+    }
+
     @Test
     public void testBuildFields() {
         SurveyParser surveyParser = new SurveyParser();
@@ -187,6 +240,24 @@ public class SurveyParserTest {
         assertEquals("No option 2", "Yes", option2.getLabel());
         Option option3 = options.get(2);
         assertEquals("No option 3", "other", option3.getLabel());
+    }
+
+    @Test
+    public void testImageFieldProperties() {
+
+        SurveyParser surveyParser = new SurveyParser();
+        List<SurveyField> surveyFields = surveyParser.buildFields(createSurveyModelWithImageField());
+        assertNotNull(surveyFields);
+        assertEquals(2, surveyFields.size());
+        SurveyField surveyField = surveyFields.get(1);
+        SurveyFieldProperties surveyFieldProperties = surveyField.getSurveyFieldProperties();
+        assertNotNull(surveyFieldProperties);
+
+        assertEquals("No other", Boolean.TRUE, surveyFieldProperties.isOther());
+        assertNotNull(surveyFieldProperties.getOptions());
+        List<Option> options = surveyFieldProperties.getOptions();
+
+
     }
 
     @Test

@@ -138,6 +138,8 @@ public abstract class SurveyFieldBase implements SurveyField {
                 case RADIO:
                     surveyField = new SurveyRadioField(id, label, type, required, persistent, surveyFieldProperties, formId);
                     break;
+                case IMAGE:
+                    surveyField = new SurveyImageField(id, label, type, required, persistent, surveyFieldProperties, formId);
 
             }
 

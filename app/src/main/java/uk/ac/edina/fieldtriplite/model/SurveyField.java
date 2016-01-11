@@ -21,6 +21,7 @@ public interface SurveyField {
     enum Type {
         TEXT("text"),
         RADIO("radio"),
+        IMAGE("image"),
         SELECT("select"),
         RANGE("range"),
         DTREE("dtree"),
@@ -72,9 +73,7 @@ public interface SurveyField {
     SurveyFieldProperties getSurveyFieldProperties();
 
 
-    void convertToView(SurveyVisitor vistor);
-
-    void convertToRecord(SurveyVisitor visitor);
+    void accept(SurveyVisitor vistor);
 
 
 }

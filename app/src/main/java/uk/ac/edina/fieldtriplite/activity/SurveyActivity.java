@@ -63,7 +63,7 @@ public class SurveyActivity extends AppCompatActivity {
 
             SurveyModelToView surveyModelToView = new SurveyModelToView(SurveyActivity.this, container);
             for (SurveyField field : surveyFields) {
-                field.convertToView(surveyModelToView);
+                field.accept(surveyModelToView);
             }
             addSaveRecordButton();
         }
@@ -87,7 +87,7 @@ public class SurveyActivity extends AppCompatActivity {
         SurveyViewToRecord surveyViewToRecord = new SurveyViewToRecord(container);
 
         for(SurveyField f : surveyFields) {
-            f.convertToRecord(surveyViewToRecord);
+            f.accept(surveyViewToRecord);
         }
 
         RecordModel record = surveyViewToRecord.getRecordModel();

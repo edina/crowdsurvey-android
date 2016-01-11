@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import uk.ac.edina.fieldtriplite.model.SurveyImageField;
 import uk.ac.edina.fieldtriplite.model.SurveyRadioField;
 import uk.ac.edina.fieldtriplite.model.SurveyTextField;
 import uk.ac.edina.fieldtriplite.validation.FieldValidation;
@@ -44,6 +45,12 @@ public class SurveyModelToView implements SurveyVisitor {
 
     @Override
     public void visit(SurveyRadioField field) {
+
+
+    }
+
+    @Override
+    public void visit(SurveyImageField field) {
 
 
     }

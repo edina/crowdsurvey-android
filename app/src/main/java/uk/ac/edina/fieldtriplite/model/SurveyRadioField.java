@@ -11,12 +11,9 @@ public class SurveyRadioField extends SurveyFieldBase {
     }
 
     @Override
-    public void convertToView(SurveyVisitor visitor) {
+    public void accept(SurveyVisitor visitor) {
         visitor.visit(this);
     }
 
-    @Override
-    public void convertToRecord(SurveyVisitor visitor) {
-        visitor.visit(this);
-    }
+
 }

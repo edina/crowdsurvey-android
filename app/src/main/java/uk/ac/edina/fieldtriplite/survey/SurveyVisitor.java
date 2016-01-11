@@ -1,5 +1,6 @@
 package uk.ac.edina.fieldtriplite.survey;
 
+import uk.ac.edina.fieldtriplite.model.SurveyImageField;
 import uk.ac.edina.fieldtriplite.model.SurveyRadioField;
 import uk.ac.edina.fieldtriplite.model.SurveyTextField;
 
@@ -11,4 +12,6 @@ public interface SurveyVisitor {
     void visit(SurveyTextField field);
 
     void visit(SurveyRadioField field);
+
+    void visit(SurveyImageField field);
 }
