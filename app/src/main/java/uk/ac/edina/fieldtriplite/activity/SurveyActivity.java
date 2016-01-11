@@ -21,8 +21,6 @@ import uk.ac.edina.fieldtriplite.model.RecordModel;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.model.SurveyParser;
-import uk.ac.edina.fieldtriplite.service.SurveyService;
-import uk.ac.edina.fieldtriplite.service.SurveyServiceImpl;
 import uk.ac.edina.fieldtriplite.survey.SurveyModelToView;
 import uk.ac.edina.fieldtriplite.survey.SurveyViewToRecord;
 
@@ -34,9 +32,6 @@ public class SurveyActivity extends AppCompatActivity {
     private List<SurveyField> surveyFields;
     private LinearLayout container;
 
-
-
-    private SurveyService surveyService = new SurveyServiceImpl();
 
 
     class SurveyModelCallBack implements ObjectCallback<SurveyModel>{
@@ -112,8 +107,8 @@ public class SurveyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
         container = (LinearLayout)findViewById(R.id.viewToAddTo);
-
-        surveyService.getCustomSurvey(this, new SurveyModelCallBack());
+        FieldTripApplication application = (FieldTripApplication)getApplicationContext();
+        application.getSurveyService().getCustomSurvey(this, new SurveyModelCallBack());
 
     }
 
@@ -123,7 +118,5 @@ public class SurveyActivity extends AppCompatActivity {
         return surveyFields;
     }
 
-    public void setSurveyService(SurveyService surveyService) {
-        this.surveyService = surveyService;
-    }
+
 }

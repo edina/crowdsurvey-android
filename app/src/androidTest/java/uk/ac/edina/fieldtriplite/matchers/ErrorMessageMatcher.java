@@ -30,7 +30,7 @@ public class ErrorMessageMatcher {
 
                 EditText editText = (EditText) view;
 
-                return expectedError.equals(editText.getError());
+                return expectedError.equals(editText.getError()) ;
             }
         };
     }
