@@ -146,9 +146,9 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
             countTilesLoaded = 0 ;
             // reload page with MockWebViewClient to capture any onReceiveError callback
             // and count map tiles loaded
-            getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient)) ;
+             getInstrumentation().runOnMainSync(new WebViewPageReload(mWebView, mockWebViewClient)) ;
            // give it some time to load
-            sleep(3000);
+            sleep(4000);
             Log.e("FieldTripMapTest", " testMApTileLoaded pageLoaded:" + pageLoaded + " countTileLoaded:" + countTilesLoaded);
             assertTrue("page reloaded", pageLoaded);
             assertFalse("error occured loading map", mockWebViewClient.mError);
