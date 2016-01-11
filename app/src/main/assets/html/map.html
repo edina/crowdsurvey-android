@@ -60,8 +60,7 @@ function onLocationFix(latlonStr){
 function onLocationUpdate(latlonStr){
 
     var latlonObj = JSON.parse(latlonStr) ;
-    var latlng = L.latLng(latlonObj.lat, latlonObj.lon);
-
+    var latlng = L.latLng(latlonObj.geometry.coordinates[1], latlonObj.geometry.coordinates[0]);
     marker.setLatLng(latlng) ;
     map.panTo(latlng);
 };
