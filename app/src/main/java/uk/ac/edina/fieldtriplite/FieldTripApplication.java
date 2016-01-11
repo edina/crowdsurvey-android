@@ -9,6 +9,9 @@ import com.couchbase.lite.android.AndroidContext;
 
 import java.io.IOException;
 
+import uk.ac.edina.fieldtriplite.service.SurveyService;
+import uk.ac.edina.fieldtriplite.service.SurveyServiceImpl;
+
 /**
  * Created by murrayking on 05/01/2016.
  */
@@ -19,6 +22,7 @@ public class FieldTripApplication extends Application {
     private static final String DATABASE_NAME = "crowdsurveydb";
     private Database database;
     private Manager manager;
+    private SurveyService surveyService = new SurveyServiceImpl();
 
 
     @Override
@@ -63,5 +67,17 @@ public class FieldTripApplication extends Application {
      */
     public Database getDatabase() {
         return this.database;
+    }
+
+    public SurveyService getSurveyService() {
+        return surveyService;
+    }
+
+    /**
+     * Used for injecting mock service
+     * @param surveyService
+     */
+    public void setSurveyService(SurveyService surveyService) {
+        this.surveyService = surveyService;
     }
 }

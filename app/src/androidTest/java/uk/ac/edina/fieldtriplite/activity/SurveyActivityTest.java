@@ -1,6 +1,9 @@
 package uk.ac.edina.fieldtriplite.activity;
 
 import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -15,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.edina.fieldtriplite.matchers.ErrorMessageMatcher;
+import uk.ac.edina.fieldtriplite.FieldTripApplication;
 import uk.ac.edina.fieldtriplite.matchers.TextInputLayoutHintMatcher;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
@@ -48,32 +51,36 @@ public class SurveyActivityTest {
      * {@link ActivityTestRule} will create and launch of the activity for you and also expose
      * the activity under test. To get a reference to the activity you can use
      * the {@link ActivityTestRule#getActivity()} method.
-
      */
-    @Rule
-    public ActivityTestRule<SurveyActivity> activityRule = new ActivityTestRule<>(
-            SurveyActivity.class);
 
+
+    @Rule
+    public ActivityTestRule<SurveyActivity> activityRule = new ActivityTestRule<SurveyActivity>(
+            SurveyActivity.class, true, false
+    );
 
     @Before
     public void setUpActivity() {
-        SurveyActivity surveyActivity = activityRule.getActivity();
-        surveyActivity.setSurveyService(new SurveyServiceMock());
+
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        FieldTripApplication app = (FieldTripApplication) instrumentation.getTargetContext()
+                .getApplicationContext();
+
+        app.setSurveyService(new SurveyServiceMock());
+
     }
 
     @Test
     public void changeTextInFirstTextField() {
+        activityRule.launchActivity(new Intent());
         List<SurveyField> surveyFields = getSurveyFields();
         SurveyField firstTextField = surveyFields.get(0);
 
         onView(withId(firstTextField.getFormId())).check(matches(isDisplayed()));
 
 
-
-
         onView(withId(firstTextField.getFormId()))
                 .perform(typeText(STRING_TO_BE_TYPED), closeSoftKeyboard());
-
 
 
         onView(withId(firstTextField.getFormId())).check(matches(withText(STRING_TO_BE_TYPED)));
@@ -81,8 +88,10 @@ public class SurveyActivityTest {
 
     }
 
+
     @Test
-    public void testHintTextOnFirstField()  {
+    public void testHintTextOnFirstField() {
+        activityRule.launchActivity(new Intent());
         List<SurveyField> surveyFields = getSurveyFields();
         SurveyField firstTextField = surveyFields.get(0);
 
@@ -90,33 +99,36 @@ public class SurveyActivityTest {
                 .check(matches(TextInputLayoutHintMatcher.withHint("1. Date of survey")));
 
 
-
     }
 
     @Test
-    public void testMaxCharsValidationError()  {
+    public void testMaxCharsValidationError() {
+        activityRule.launchActivity(new Intent());
         List<SurveyField> surveyFields = getSurveyFields();
         SurveyField firstTextField = surveyFields.get(0);
 
         onView(withId(firstTextField.getFormId()))
-                .perform(typeText(MAX_CHARS_TEST))
-                .check(matches(ErrorMessageMatcher.hasErrorText("Too Long only 5 allowed")));
+                .perform(typeText(MAX_CHARS_TEST));
 
+        onView(withChild(withId(firstTextField.getFormId())))
+                .check(matches(TextInputLayoutHintMatcher.withError("Too Long only 5 allowed")));
 
 
     }
 
     /**
      * Thread issue on rooted device add a short sleep if required
+     *
      * @return List<SurveyField>
      * @throws InterruptedException
      */
+
     private List<SurveyField> getSurveyFields() {
         SurveyActivity surveyActivity = activityRule.getActivity();
 
         List<SurveyField> surveyFields = surveyActivity.getSurveyFields();
 
-        if (surveyFields == null){
+        if (surveyFields == null) {
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException ignored) {
@@ -161,7 +173,6 @@ public class SurveyActivityTest {
             callback.onSuccess(surveyModel);
 
         }
-
 
     }
 }

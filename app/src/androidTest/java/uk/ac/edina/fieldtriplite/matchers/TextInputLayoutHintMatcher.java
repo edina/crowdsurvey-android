@@ -41,4 +41,28 @@ public class TextInputLayoutHintMatcher {
             }
         };
     }
+
+
+    public static Matcher<View> withError(final String substring) {
+        return withError(is(substring));
+    }
+
+    public static Matcher<View> withError(final Matcher<String> stringMatcher) {
+        checkNotNull(stringMatcher);
+        return new BoundedMatcher<View, TextInputLayout>(TextInputLayout.class) {
+
+            @Override
+            public boolean matchesSafely(TextInputLayout view) {
+                final CharSequence error = view.getError();
+                return error != null && stringMatcher.matches(error.toString());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with error: ");
+                stringMatcher.describeTo(description);
+            }
+        };
+    }
+
 }
