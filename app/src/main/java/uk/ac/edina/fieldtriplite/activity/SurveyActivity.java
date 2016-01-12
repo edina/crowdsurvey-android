@@ -12,7 +12,7 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Document;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
-import java.util.List;
+import java.util.Iterator;
 
 import uk.ac.edina.fieldtriplite.FieldTripApplication;
 import uk.ac.edina.fieldtriplite.R;
@@ -21,15 +21,15 @@ import uk.ac.edina.fieldtriplite.model.RecordModel;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.model.SurveyParser;
-import uk.ac.edina.fieldtriplite.survey.SurveyModelToView;
-import uk.ac.edina.fieldtriplite.survey.SurveyViewToRecord;
+import uk.ac.edina.fieldtriplite.survey.SurveyModelToViewVisitor;
+import uk.ac.edina.fieldtriplite.survey.SurveyViewToRecordVisitor;
 
 public class SurveyActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = "SurveyModel";
 
 
-    private List<SurveyField> surveyFields;
+    private Iterator<SurveyField> surveyFields;
     private LinearLayout container;
 
 
@@ -61,10 +61,9 @@ public class SurveyActivity extends AppCompatActivity {
         @Override
         public void run() {
 
-            SurveyModelToView surveyModelToView = new SurveyModelToView(SurveyActivity.this, container);
-            for (SurveyField field : surveyFields) {
-                field.accept(surveyModelToView);
-            }
+            SurveyModelToViewVisitor surveyModelToViewVisitor = new SurveyModelToViewVisitor(SurveyActivity.this, container);
+            surveyModelToViewVisitor.visitAll(surveyFields);
+
             addSaveRecordButton();
         }
     }
@@ -84,13 +83,12 @@ public class SurveyActivity extends AppCompatActivity {
 
     private void saveRecord() {
 
-        SurveyViewToRecord surveyViewToRecord = new SurveyViewToRecord(container);
+        SurveyViewToRecordVisitor surveyViewToRecordVisitor = new SurveyViewToRecordVisitor(container);
 
-        for(SurveyField f : surveyFields) {
-            f.accept(surveyViewToRecord);
-        }
+        surveyViewToRecordVisitor.visitAll(surveyFields);
 
-        RecordModel record = surveyViewToRecord.getRecordModel();
+
+        RecordModel record = surveyViewToRecordVisitor.getRecordModel();
         Log.d(LOG_TAG, record.toString());
         FieldTripApplication application = (FieldTripApplication) this.getApplicationContext();
         try {
@@ -114,7 +112,7 @@ public class SurveyActivity extends AppCompatActivity {
 
 
 
-    public List<SurveyField> getSurveyFields() {
+    public Iterator<SurveyField> getSurveyFields() {
         return surveyFields;
     }
 

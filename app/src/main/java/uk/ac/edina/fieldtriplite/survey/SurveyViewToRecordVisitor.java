@@ -3,8 +3,11 @@ package uk.ac.edina.fieldtriplite.survey;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import java.util.Iterator;
+
 import uk.ac.edina.fieldtriplite.model.RecordField;
 import uk.ac.edina.fieldtriplite.model.RecordModel;
+import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyImageField;
 import uk.ac.edina.fieldtriplite.model.SurveyRadioField;
 import uk.ac.edina.fieldtriplite.model.SurveyTextField;
@@ -12,14 +15,19 @@ import uk.ac.edina.fieldtriplite.model.SurveyTextField;
 /**
  * Created by murrayking on 22/12/2015.
  */
-public class SurveyViewToRecord implements SurveyVisitor {
+public class SurveyViewToRecordVisitor implements SurveyVisitor {
     private RecordModel model;
     private ViewGroup container;
+    private VisitAll visitAll = new VisitAll();
 
-
-    public SurveyViewToRecord( ViewGroup container){
+    public SurveyViewToRecordVisitor(ViewGroup container){
         this.model = new RecordModel();
         this.container = container;
+    }
+
+    @Override
+    public void visitAll(Iterator<SurveyField> fieldIterator) {
+        visitAll.visit(fieldIterator);
     }
 
     @Override

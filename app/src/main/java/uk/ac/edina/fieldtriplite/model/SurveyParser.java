@@ -3,6 +3,7 @@ package uk.ac.edina.fieldtriplite.model;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -13,7 +14,7 @@ import java.util.Random;
 public class SurveyParser {
 
 
-    public List<SurveyField> buildFields(SurveyModel surveyModel) {
+    public Iterator<SurveyField> buildFields(SurveyModel surveyModel) {
 
         List<SurveyField> surveyFields = new ArrayList<>();
         List<Map<String, Object>> fields = surveyModel.getFields();
@@ -41,7 +42,7 @@ public class SurveyParser {
                 }
 
         }
-        return surveyFields;
+        return surveyFields.iterator();
     }
 
     private int getNoCollisionFormId() {
