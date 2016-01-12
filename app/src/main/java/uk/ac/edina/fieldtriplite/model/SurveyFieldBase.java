@@ -40,15 +40,6 @@ public abstract class SurveyFieldBase implements SurveyField {
         return surveyFieldProperties;
     }
 
-    @Override
-    public SurveyField next() {
-        return null;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return false;
-    }
 
     @Override
     public String getId() {

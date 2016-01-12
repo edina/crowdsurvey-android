@@ -75,7 +75,4 @@ public interface SurveyField {
 
     void accept(SurveyVisitor vistor);
 
-    SurveyField next();
-
-    boolean hasNext();
 }
