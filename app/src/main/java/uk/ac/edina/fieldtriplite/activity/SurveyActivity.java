@@ -12,7 +12,7 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Document;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
-import java.util.Iterator;
+import java.util.List;
 
 import uk.ac.edina.fieldtriplite.FieldTripApplication;
 import uk.ac.edina.fieldtriplite.R;
@@ -29,7 +29,7 @@ public class SurveyActivity extends AppCompatActivity {
     public static final String LOG_TAG = "SurveyModel";
 
 
-    private Iterator<SurveyField> surveyFields;
+    private List<SurveyField> surveyFields;
     private LinearLayout container;
 
 
@@ -62,7 +62,7 @@ public class SurveyActivity extends AppCompatActivity {
         public void run() {
 
             SurveyModelToViewVisitor surveyModelToViewVisitor = new SurveyModelToViewVisitor(SurveyActivity.this, container);
-            surveyModelToViewVisitor.visitAll(surveyFields);
+            surveyModelToViewVisitor.visitAll(surveyFields.iterator());
 
             addSaveRecordButton();
         }
@@ -85,7 +85,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         SurveyViewToRecordVisitor surveyViewToRecordVisitor = new SurveyViewToRecordVisitor(container);
 
-        surveyViewToRecordVisitor.visitAll(surveyFields);
+        surveyViewToRecordVisitor.visitAll(surveyFields.iterator());
 
 
         RecordModel record = surveyViewToRecordVisitor.getRecordModel();
@@ -112,7 +112,7 @@ public class SurveyActivity extends AppCompatActivity {
 
 
 
-    public Iterator<SurveyField> getSurveyFields() {
+    public List<SurveyField> getSurveyFields() {
         return surveyFields;
     }
 

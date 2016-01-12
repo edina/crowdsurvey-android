@@ -19,7 +19,7 @@ import uk.ac.edina.fieldtriplite.validation.FieldValidation;
  * Created by murrayking on 22/12/2015.
  */
 public class SurveyModelToViewVisitor implements SurveyVisitor {
-    private final VisitAll visitAll = new VisitAll();
+    private final VisitAll visitAll = new VisitAll(this);
     ViewGroup layoutContainer;
     Activity context;
     FieldValidation fieldValidation = new FieldValidation();

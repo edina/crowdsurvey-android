@@ -7,13 +7,11 @@ import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -160,7 +158,7 @@ public class SurveyParserTest {
         Map<String, Object> fieldTwoProperties = new HashMap<>();
         fieldTwoProperties.put("los", false);
         fieldTwoProperties.put("multi-image", false);
-        fieldTwo.put("properties", fieldTwoProperties);
+        fieldTwo.put("properties", properties);
         fields.add(fieldOne);
         fields.add(fieldTwo);
         s.setFields(fields);
@@ -171,10 +169,10 @@ public class SurveyParserTest {
     @Test
     public void testBuildFields() {
         SurveyParser surveyParser = new SurveyParser();
-        Iterator<SurveyField> surveyFields = surveyParser.buildFields(surveyModel);
+        List<SurveyField> surveyFields = surveyParser.buildFields(surveyModel);
         assertNotNull(surveyFields);
-        assertTrue( surveyFields.hasNext());
-        SurveyField surveyField = surveyFields.next();
+        assertEquals(1, surveyFields.size());
+        SurveyField surveyField = surveyFields.get(0);
         assertEquals("No id", "form-text-1", surveyField.getId());
         assertEquals("No type", SurveyField.Type.TEXT, surveyField.getType());
         assertEquals("No label", "1. Date of survey", surveyField.getLabel());
@@ -192,7 +190,7 @@ public class SurveyParserTest {
 
         SurveyParser surveyParser = new SurveyParser();
         SurveyModel modelWithIllegalType = createSurveyModelWithIllegalType();
-        Iterator<SurveyField> surveyFields = surveyParser.buildFields(modelWithIllegalType);
+        List<SurveyField> surveyFields = surveyParser.buildFields(modelWithIllegalType);
 
 
     }
@@ -217,7 +215,7 @@ public class SurveyParserTest {
         surveyModel2.setFields(fields2);
         SurveyParser surveyParser = new SurveyParser();
 
-        Iterator<SurveyField> surveyFields = surveyParser.buildFields(surveyModel2);
+        List<SurveyField> surveyFields = surveyParser.buildFields(surveyModel2);
 
 
     }
@@ -226,10 +224,10 @@ public class SurveyParserTest {
     public void testSurveyFieldProperties() {
 
         SurveyParser surveyParser = new SurveyParser();
-        Iterator<SurveyField> surveyFields = surveyParser.buildFields(surveyModel);
+        List<SurveyField> surveyFields = surveyParser.buildFields(surveyModel);
         assertNotNull(surveyFields);
-        assertTrue(surveyFields.hasNext());
-        SurveyField surveyField = surveyFields.next();
+        assertEquals(1, surveyFields.size());
+        SurveyField surveyField = surveyFields.get(0);
         SurveyFieldProperties surveyFieldProperties = surveyField.getSurveyFieldProperties();
         assertNotNull(surveyFieldProperties);
 
@@ -246,19 +244,20 @@ public class SurveyParserTest {
     }
 
     @Test
-    public void testImageField() {
+    public void testImageFieldProperties() {
 
         SurveyParser surveyParser = new SurveyParser();
-        SurveyModel surveyModel = createSurveyModelWithImageField();
-        Iterator<SurveyField> surveyFields = surveyParser.buildFields(surveyModel);
+        List<SurveyField> surveyFields = surveyParser.buildFields(createSurveyModelWithImageField());
         assertNotNull(surveyFields);
-        assertTrue(surveyFields.hasNext());
-        assertNotNull(surveyFields.next());
-        SurveyField surveyField = surveyFields.next();
+        assertEquals(2, surveyFields.size());
+        SurveyField surveyField = surveyFields.get(1);
         SurveyFieldProperties surveyFieldProperties = surveyField.getSurveyFieldProperties();
         assertNotNull(surveyFieldProperties);
 
-        assertEquals("No id", "form-image-1", surveyField.getId());
+        assertEquals("No other", Boolean.TRUE, surveyFieldProperties.isOther());
+        assertNotNull(surveyFieldProperties.getOptions());
+        List<Option> options = surveyFieldProperties.getOptions();
+
 
     }
 
@@ -268,10 +267,10 @@ public class SurveyParserTest {
         SurveyModel surveyModel = createSurveyModelWithOptions();
 
         SurveyParser surveyParser = new SurveyParser();
-        Iterator<SurveyField> surveyFields = surveyParser.buildFields(surveyModel);
+        List<SurveyField> surveyFields = surveyParser.buildFields(surveyModel);
         assertNotNull(surveyFields);
-        assertTrue(surveyFields.hasNext());
-        SurveyField surveyField = surveyFields.next();
+        assertEquals(1, surveyFields.size());
+        SurveyField surveyField = surveyFields.get(0);
         SurveyFieldProperties surveyFieldProperties = surveyField.getSurveyFieldProperties();
         assertNotNull(surveyFieldProperties);
 

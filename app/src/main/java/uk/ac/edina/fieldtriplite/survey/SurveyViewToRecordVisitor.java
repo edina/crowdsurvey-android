@@ -18,7 +18,7 @@ import uk.ac.edina.fieldtriplite.model.SurveyTextField;
 public class SurveyViewToRecordVisitor implements SurveyVisitor {
     private RecordModel model;
     private ViewGroup container;
-    private VisitAll visitAll = new VisitAll();
+    private VisitAll visitAll = new VisitAll(this);
 
     public SurveyViewToRecordVisitor(ViewGroup container){
         this.model = new RecordModel();

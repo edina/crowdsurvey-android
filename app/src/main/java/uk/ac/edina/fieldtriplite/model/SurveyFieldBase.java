@@ -23,8 +23,6 @@ public abstract class SurveyFieldBase implements SurveyField {
 
     private int formId;
 
-    private SurveyFieldBase nextSurveyField;
-
     protected SurveyFieldBase(String id, String label, Type type, Boolean required, Boolean persistent, SurveyFieldProperties surveyFieldProperties, int formId) {
         this.id = id;
         this.label = label;
