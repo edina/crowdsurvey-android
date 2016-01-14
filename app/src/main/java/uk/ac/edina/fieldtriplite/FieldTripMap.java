@@ -45,6 +45,8 @@ public class FieldTripMap extends AppCompatActivity
     private int REQUEST_IMAGE_CAPTURE = 100;
     private int REQUEST_LOAD_IMAGE = 101;
 
+    private String APP_FOLDER_NAME = "CROWN_SURVEY";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -239,36 +241,54 @@ public class FieldTripMap extends AppCompatActivity
             Log.d(LOG_TAG, "The device does not have camera");
     }
     /**
-     * This method creates a File under primary_external_storage_for_app/files/pictures
+     * This method creates an empty File on the External Storage created for the app
      * @return File descriptor
-     * @throws IOException if external storage is not available, the folder CROWD_SURVEY does not exist or
+     * @throws IOException if the External Storage is not available for writing
      * the file cannot be created
      */
     private File createImageFile() throws IOException{
-        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            //File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "CROWD_SURVEY");
-            File folder = new File(this.getExternalFilesDir(null),"pictures");
-            Log.d(LOG_TAG,folder.getAbsolutePath());
-            if (folder.mkdirs()) {
-                String fileName = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
-                File image = File.createTempFile(fileName, ".jpg", folder);
-                return image;
-            }
-            throw new IOException("Directory CROWD_SURVEY does not exist");
-        }
-        throw new IOException("The external storage is not available for writing");
+        this.createAppFolderOnExternalStorage();
+        String fileName = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+        File image = File.createTempFile(fileName, ".jpg", new File(Environment.getExternalStorageDirectory() + "/"+APP_FOLDER_NAME));
+        Log.d(LOG_TAG, "Empty file created in:" + image.getAbsolutePath());
+        return image;
     }
 
     /**
-     * Open Image application for images located under external storage.
+     * Open the gallery filtered to choose only images
      */
     private void chooseFromGallery(){
-        Intent intent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        if(intent.resolveActivity(getPackageManager()) != null){
-            startActivityForResult(intent, REQUEST_LOAD_IMAGE);
+        try {
+            this.createAppFolderOnExternalStorage();
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            Uri uri = Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/"+APP_FOLDER_NAME+"/"));
+            intent.setDataAndType(uri,"image/*");
+            Log.d(LOG_TAG, "Directory of data to pick up an image:" + intent.getData().toString());
+            if(intent.resolveActivity(getPackageManager()) != null){
+                startActivityForResult(Intent.createChooser(intent,"Choose an image"), REQUEST_LOAD_IMAGE);
+            }
+            else
+                Log.d(LOG_TAG, "There is no activity to handle ACTION_PICK image from the external storage");
+        }catch(Exception e){
+            Log.d(LOG_TAG,e.getMessage());
         }
-        else
-            Log.d(LOG_TAG,"There is no activity to handle Pick an item from the data");
+    }
+
+    /**
+     * Creates a folder for the app on the External Storage of the device.
+     * @return True if created or False if already exists.
+     * @throws IOException if the External Storage is not available for writing
+     */
+    private Boolean createAppFolderOnExternalStorage() throws IOException{
+        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
+            File f = new File(Environment.getExternalStorageDirectory(),APP_FOLDER_NAME);
+            if(!f.exists()) {
+                f.mkdirs();
+                return true;
+            }
+            return false;
+        }
+        throw new IOException("The external storage is not available for writing");
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
