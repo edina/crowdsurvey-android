@@ -12,4 +12,5 @@ import uk.ac.edina.fieldtriplite.model.SurveyModel;
 public interface SurveyService {
 
     void getCustomSurvey(Activity context, ObjectCallback<SurveyModel> callback);
+    void getCustomSurvey(Activity context, String surveyId, ObjectCallback<SurveyModel> callback);
 }

@@ -142,7 +142,12 @@ public class SurveyActivityTest {
     class SurveyServiceMock implements SurveyService {
 
         @Override
-        public void getCustomSurvey(Activity context, final ObjectCallback<SurveyModel> callback) {
+        public void getCustomSurvey(Activity context, ObjectCallback<SurveyModel> callback) {
+            getCustomSurvey(context, "", callback);
+        }
+
+        @Override
+        public void getCustomSurvey(Activity context, String surveyId, ObjectCallback<SurveyModel> callback) {
 
             SurveyModel surveyModel = new SurveyModel();
             List<Map<String, Object>> fields = new ArrayList<>();
@@ -173,7 +178,6 @@ public class SurveyActivityTest {
             callback.onSuccess(surveyModel);
 
         }
-
     }
 }
 
