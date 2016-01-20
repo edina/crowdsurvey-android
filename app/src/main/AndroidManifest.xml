@@ -33,7 +33,15 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".activity.SurveyActivity"></activity>
+        <activity android:name=".activity.SurveyActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="crowdsurvey"/>
+                <data android:host="uk.ac.edina.crowdsurvey"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

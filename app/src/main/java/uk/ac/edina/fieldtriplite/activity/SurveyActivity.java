@@ -1,5 +1,7 @@
 package uk.ac.edina.fieldtriplite.activity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,6 +23,7 @@ import uk.ac.edina.fieldtriplite.model.RecordModel;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.model.SurveyParser;
+import uk.ac.edina.fieldtriplite.service.SurveyService;
 import uk.ac.edina.fieldtriplite.survey.SurveyModelToViewVisitor;
 import uk.ac.edina.fieldtriplite.survey.SurveyViewToRecordVisitor;
 
@@ -106,11 +109,22 @@ public class SurveyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_survey);
         container = (LinearLayout)findViewById(R.id.viewToAddTo);
         FieldTripApplication application = (FieldTripApplication)getApplicationContext();
-        application.getSurveyService().getCustomSurvey(this, new SurveyModelCallBack());
+        SurveyService surveyService = application.getSurveyService();
 
+        Intent intent = getIntent();
+        String action = intent.getAction();
+
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Uri uri = intent.getData();
+            String surveyId = uri.getQueryParameter("surveyId");
+            Log.d(LOG_TAG, "SurveyId: " + surveyId);
+            if (surveyId != null) {
+                surveyService.getCustomSurvey(this, surveyId, new SurveyModelCallBack());
+            }
+        } else {
+            surveyService.getCustomSurvey(this, new SurveyModelCallBack());
+        }
     }
-
-
 
     public List<SurveyField> getSurveyFields() {
         return surveyFields;
