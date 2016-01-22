@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/viewToAddTo"
-    tools:context=".MainActivity">
+    tools:activity=".MainActivity">
 
 
     <android.support.design.widget.TextInputLayout

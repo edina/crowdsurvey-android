@@ -15,6 +15,7 @@ import com.couchbase.lite.Document;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 import java.util.List;
+import java.util.Observable;
 
 import uk.ac.edina.fieldtriplite.FieldTripApplication;
 import uk.ac.edina.fieldtriplite.R;
@@ -34,6 +35,16 @@ public class SurveyActivity extends AppCompatActivity {
 
     private List<SurveyField> surveyFields;
     private LinearLayout container;
+
+    class ObservableCameraChange extends Observable {
+        @Override
+        public void setChanged(){
+            super.setChanged();
+        }
+
+    }
+
+    private ObservableCameraChange observableCameraChange = new ObservableCameraChange();
 
 
 
@@ -131,4 +142,39 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
 
+
+    public static class ActivityResult{
+        private int requestCode;
+        private int resultCode;
+        private Intent data;
+
+        public ActivityResult(int requestCode, int resultCode, Intent data) {
+            this.requestCode = requestCode;
+            this.resultCode = resultCode;
+            this.data = data;
+        }
+
+        public int getResultCode() {
+            return resultCode;
+        }
+
+        public int getRequestCode() {
+            return requestCode;
+        }
+
+        public Intent getData() {
+            return data;
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        observableCameraChange.setChanged();
+        observableCameraChange.notifyObservers(new ActivityResult(requestCode,resultCode, data));
+
+    }
+
+    public Observable getObservableCameraChange() {
+        return observableCameraChange;
+    }
 }

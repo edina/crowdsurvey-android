@@ -224,7 +224,7 @@ public class FieldTripMap extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    private void takePhoto() {
+    public void takePhoto() {
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             try {
