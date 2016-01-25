@@ -1,10 +1,12 @@
 package uk.ac.edina.fieldtriplite.survey;
 
+import android.graphics.Color;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import java.util.Iterator;
@@ -63,14 +65,17 @@ public class SurveyModelToViewVisitor implements SurveyVisitor {
         LinearLayout linearLayout = new LinearLayout(activity);
         Button button = new Button(activity);
         button.setText("Take Photo");
-        linearLayout.addView(button, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        final ImageView thumbImage = new ImageView(activity);
+        thumbImage.setBackgroundColor(Color.RED);
+        linearLayout.addView(button, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        linearLayout.addView(thumbImage, new LinearLayout.LayoutParams(200, 200));
         layoutContainer.addView(linearLayout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                CameraFieldHelper cameraFieldHelper = new CameraFieldHelper(activity);
+                CameraFieldHelper cameraFieldHelper = new CameraFieldHelper(activity, thumbImage);
                 cameraFieldHelper.takePhoto();
 
             }

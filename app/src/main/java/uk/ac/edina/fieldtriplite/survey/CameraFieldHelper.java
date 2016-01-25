@@ -3,10 +3,13 @@ package uk.ac.edina.fieldtriplite.survey;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,16 +28,16 @@ public class CameraFieldHelper implements Observer {
     //Request codes for child activities
     private int REQUEST_IMAGE_CAPTURE = 100;
     private int REQUEST_LOAD_IMAGE = 101;
-
+    private ImageView thumbImage;
     private static String LOG_TAG = "camera";
     private Activity activity;
-    public CameraFieldHelper(SurveyActivity activity){
+    public CameraFieldHelper(SurveyActivity activity, ImageView thumbImage){
 
         activity.getObservableCameraChange().deleteObservers();
         activity.getObservableCameraChange().addObserver(this);
 
         this.activity = activity;
-
+        this.thumbImage = thumbImage;
     }
     public void takePhoto() {
         if (activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
@@ -44,8 +47,9 @@ public class CameraFieldHelper implements Observer {
                 if (intent.resolveActivity(activity.getPackageManager()) != null) {
                     activity.startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
                     Log.d(LOG_TAG, "takePicture intent launched");
-                } else
+                } else {
                     Log.d(LOG_TAG, "No activity can handle takePicture");
+                }
             } catch (IOException e) {
                 Log.d(LOG_TAG, e.getMessage());
             }
@@ -98,17 +102,22 @@ public class CameraFieldHelper implements Observer {
     public void update(Observable observable, Object data) {
         SurveyActivity.ActivityResult r = (SurveyActivity.ActivityResult)data;
         if(r.getRequestCode() == REQUEST_IMAGE_CAPTURE){
-            if(r.getResultCode() == Activity.RESULT_OK)
-                Log.d(LOG_TAG,"takePicture result OK");
-            else if(r.getResultCode() == Activity.RESULT_CANCELED)
-                Log.d(LOG_TAG,"takePicture result CANCEL. Picture might be taken but cancelled later");
-        }
-        else if(r.getRequestCode() == REQUEST_LOAD_IMAGE){
+            if(r.getResultCode() == Activity.RESULT_OK) {
+                Log.d(LOG_TAG, "takePicture result OK");
+
+                Bundle extras = r.getData().getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                thumbImage.setImageBitmap(imageBitmap);
+
+            } else if(r.getResultCode() == Activity.RESULT_CANCELED) {
+                Log.d(LOG_TAG, "takePicture result CANCEL. Picture might be taken but cancelled later");
+            }
+        } else if(r.getRequestCode() == REQUEST_LOAD_IMAGE){
             if(r.getResultCode() == Activity.RESULT_OK){
                 Uri uri = r.getData().getData();
                 Log.d(LOG_TAG,"Image has been loaded from "+uri.getPath());
-            }
-            else if(r.getResultCode() == Activity.RESULT_CANCELED){
+
+            } else if (r.getResultCode() == Activity.RESULT_CANCELED){
                 Log.d(LOG_TAG,"No image has been chosen");
             }
         }
