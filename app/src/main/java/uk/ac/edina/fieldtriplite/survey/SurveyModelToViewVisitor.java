@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import java.util.Iterator;
 
+import uk.ac.edina.fieldtriplite.R;
 import uk.ac.edina.fieldtriplite.activity.SurveyActivity;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyImageField;
@@ -63,23 +64,37 @@ public class SurveyModelToViewVisitor implements SurveyVisitor {
     @Override
     public void visit(SurveyImageField field) {
         LinearLayout linearLayout = new LinearLayout(activity);
-        Button button = new Button(activity);
-        button.setText("Take Photo");
+        Button takePhotoButton = new Button(activity);
+        takePhotoButton.setText(activity.getString(R.string.take_photo_button));
+        Button photoGalleryButton = new Button(activity);
+        photoGalleryButton.setText(activity.getString(R.string.gallery_photo_button));
         final ImageView thumbImage = new ImageView(activity);
-        thumbImage.setBackgroundColor(Color.RED);
-        linearLayout.addView(button, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        thumbImage.setBackgroundColor(Color.GRAY);
+        linearLayout.addView(takePhotoButton, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        linearLayout.addView(photoGalleryButton, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.addView(thumbImage, new LinearLayout.LayoutParams(200, 200));
         layoutContainer.addView(linearLayout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        button.setOnClickListener(new View.OnClickListener() {
+
+        final CameraFieldHelper cameraFieldHelper = new CameraFieldHelper(activity, thumbImage);
+        takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                CameraFieldHelper cameraFieldHelper = new CameraFieldHelper(activity, thumbImage);
+
                 cameraFieldHelper.takePhoto();
 
             }
         });
+        photoGalleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                cameraFieldHelper.chooseFromGallery();
+
+            }
+        });
+
 
     }
 

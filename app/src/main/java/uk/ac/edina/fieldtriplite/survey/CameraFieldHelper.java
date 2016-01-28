@@ -1,9 +1,12 @@
 package uk.ac.edina.fieldtriplite.survey;
 
 import android.app.Activity;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,7 +34,8 @@ public class CameraFieldHelper implements Observer {
     private ImageView thumbImage;
     private static String LOG_TAG = "camera";
     private Activity activity;
-    public CameraFieldHelper(SurveyActivity activity, ImageView thumbImage){
+
+    public CameraFieldHelper(SurveyActivity activity, ImageView thumbImage) {
 
         activity.getObservableCameraChange().deleteObservers();
         activity.getObservableCameraChange().addObserver(this);
@@ -39,6 +43,7 @@ public class CameraFieldHelper implements Observer {
         this.activity = activity;
         this.thumbImage = thumbImage;
     }
+
     public void takePhoto() {
         if (activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -56,21 +61,23 @@ public class CameraFieldHelper implements Observer {
         } else
             Log.d(LOG_TAG, "The device does not have camera");
     }
+
     /**
      * This method creates a File under primary_external_storage_for_app/files/pictures
+     *
      * @return File descriptor
      * @throws IOException if external storage is not available, the folder CROWD_SURVEY does not exist or
-     * the file cannot be created
+     *                     the file cannot be created
      */
-    private File createImageFile() throws IOException{
-        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+    private File createImageFile() throws IOException {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             //File folder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "CROWD_SURVEY");
-            File folder = new File(activity.getExternalFilesDir(null),"pictures");
+            File folder = new File(activity.getExternalFilesDir(null), "pictures");
             Log.d(LOG_TAG, folder.getAbsolutePath());
-            if(!folder.exists()) {
+            if (!folder.exists()) {
                 folder.mkdirs();
             }
-            if(folder.exists()) {
+            if (folder.exists()) {
                 String fileName = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
                 File image = File.createTempFile(fileName, ".jpg", folder);
                 return image;
@@ -84,42 +91,65 @@ public class CameraFieldHelper implements Observer {
     /**
      * Open Image application for images located under external storage.
      */
-    private void chooseFromGallery(){
-        Intent intent = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        if (intent.resolveActivity(activity.getPackageManager()) != null){
+    public void chooseFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (intent.resolveActivity(activity.getPackageManager()) != null) {
             activity.startActivityForResult(intent, REQUEST_LOAD_IMAGE);
-        }
-        else
-            Log.d(LOG_TAG,"There is no activity to handle Pick an item from the data");
+        } else
+            Log.d(LOG_TAG, "There is no activity to handle Pick an item from the data");
     }
-
-
-
-
 
 
     @Override
     public void update(Observable observable, Object data) {
-        SurveyActivity.ActivityResult r = (SurveyActivity.ActivityResult)data;
-        if(r.getRequestCode() == REQUEST_IMAGE_CAPTURE){
-            if(r.getResultCode() == Activity.RESULT_OK) {
+        SurveyActivity.ActivityResult r = (SurveyActivity.ActivityResult) data;
+        if (r.getRequestCode() == REQUEST_IMAGE_CAPTURE) {
+            if (r.getResultCode() == Activity.RESULT_OK) {
                 Log.d(LOG_TAG, "takePicture result OK");
 
                 Bundle extras = r.getData().getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 thumbImage.setImageBitmap(imageBitmap);
 
-            } else if(r.getResultCode() == Activity.RESULT_CANCELED) {
+            } else if (r.getResultCode() == Activity.RESULT_CANCELED) {
                 Log.d(LOG_TAG, "takePicture result CANCEL. Picture might be taken but cancelled later");
             }
-        } else if(r.getRequestCode() == REQUEST_LOAD_IMAGE){
-            if(r.getResultCode() == Activity.RESULT_OK){
-                Uri uri = r.getData().getData();
-                Log.d(LOG_TAG,"Image has been loaded from "+uri.getPath());
+        } else if (r.getRequestCode() == REQUEST_LOAD_IMAGE) {
+            if (r.getResultCode() == Activity.RESULT_OK) {
+                Uri selectedImageUri = r.getData().getData();
+                Log.d(LOG_TAG, "Image has been loaded from " + selectedImageUri.getPath());
 
-            } else if (r.getResultCode() == Activity.RESULT_CANCELED){
-                Log.d(LOG_TAG,"No image has been chosen");
+
+                Bitmap thumbNail = getThumbNail(selectedImageUri);
+                thumbImage.setImageBitmap(thumbNail);
+
+
+            } else if (r.getResultCode() == Activity.RESULT_CANCELED) {
+                Log.d(LOG_TAG, "No image has been chosen");
             }
         }
+    }
+
+    private Bitmap getThumbNail(Uri selectedImageUri) {
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        CursorLoader cursorLoader = new CursorLoader(activity, selectedImageUri, projection, null, null,
+                null);
+        Cursor cursor = cursorLoader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+        String selectedImagePath = cursor.getString(column_index);
+        Bitmap bm;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(selectedImagePath, options);
+        final int REQUIRED_SIZE = 200;
+        int scale = 1;
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+            scale *= 2;
+        options.inSampleSize = scale;
+        options.inJustDecodeBounds = false;
+        bm = BitmapFactory.decodeFile(selectedImagePath, options);
+        return bm;
     }
 }
