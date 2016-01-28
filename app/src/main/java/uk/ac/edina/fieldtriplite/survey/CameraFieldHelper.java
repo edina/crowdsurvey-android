@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Observable;
@@ -34,6 +35,7 @@ public class CameraFieldHelper implements Observer {
     private ImageView thumbImage;
     private static String LOG_TAG = "camera";
     private Activity activity;
+    private URI photoLocation;
 
     public CameraFieldHelper(SurveyActivity activity, ImageView thumbImage) {
 
@@ -48,7 +50,8 @@ public class CameraFieldHelper implements Observer {
         if (activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             try {
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, this.createImageFile().toURI());
+                photoLocation = this.createImageFile().toURI();
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoLocation );
                 if (intent.resolveActivity(activity.getPackageManager()) != null) {
                     activity.startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
                     Log.d(LOG_TAG, "takePicture intent launched");
@@ -108,8 +111,14 @@ public class CameraFieldHelper implements Observer {
                 Log.d(LOG_TAG, "takePicture result OK");
 
                 Bundle extras = r.getData().getExtras();
+                URI test = (URI)extras.get(MediaStore.EXTRA_OUTPUT);
+
+
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 thumbImage.setImageBitmap(imageBitmap);
+                Log.d(LOG_TAG, "Image has been created at " + photoLocation.getPath());
+                thumbImage.setTag(photoLocation.getPath());
+
 
             } else if (r.getResultCode() == Activity.RESULT_CANCELED) {
                 Log.d(LOG_TAG, "takePicture result CANCEL. Picture might be taken but cancelled later");
@@ -123,7 +132,7 @@ public class CameraFieldHelper implements Observer {
                 Bitmap thumbNail = getThumbNail(selectedImageUri);
                 thumbImage.setImageBitmap(thumbNail);
 
-
+                thumbImage.setTag(selectedImageUri.getPath());
             } else if (r.getResultCode() == Activity.RESULT_CANCELED) {
                 Log.d(LOG_TAG, "No image has been chosen");
             }
@@ -131,6 +140,7 @@ public class CameraFieldHelper implements Observer {
     }
 
     private Bitmap getThumbNail(Uri selectedImageUri) {
+
         String[] projection = {MediaStore.MediaColumns.DATA};
         CursorLoader cursorLoader = new CursorLoader(activity, selectedImageUri, projection, null, null,
                 null);

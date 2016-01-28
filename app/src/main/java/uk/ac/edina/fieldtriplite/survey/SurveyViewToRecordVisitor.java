@@ -1,5 +1,6 @@
 package uk.ac.edina.fieldtriplite.survey;
 
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
@@ -34,7 +35,7 @@ public class SurveyViewToRecordVisitor implements SurveyVisitor {
     public void visit(final SurveyTextField field) {
         RecordField recordField = new RecordField();
         recordField.setLabel(field.getLabel());
-        recordField.setId(field.getLabel());
+        recordField.setId(field.getId());
         EditText editText = (EditText)container.findViewById(field.getFormId());
         recordField.setVal(editText.getText().toString());
         model.addRecordField(recordField);
@@ -43,12 +44,16 @@ public class SurveyViewToRecordVisitor implements SurveyVisitor {
     @Override
     public void visit(SurveyRadioField field) {
 
-
     }
 
     @Override
     public void visit(SurveyImageField field) {
-
+        RecordField recordField = new RecordField();
+        recordField.setId(field.getId());
+        recordField.setLabel(field.getLabel());
+        View thumbnailImage = container.findViewById(field.getFormId());
+        String pathToImage = thumbnailImage.getTag().toString();
+        recordField.setVal(pathToImage);
 
     }
 

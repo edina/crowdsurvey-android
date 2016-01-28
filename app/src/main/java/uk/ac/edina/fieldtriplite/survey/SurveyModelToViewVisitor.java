@@ -69,6 +69,8 @@ public class SurveyModelToViewVisitor implements SurveyVisitor {
         Button photoGalleryButton = new Button(activity);
         photoGalleryButton.setText(activity.getString(R.string.gallery_photo_button));
         final ImageView thumbImage = new ImageView(activity);
+
+        thumbImage.setId(field.getFormId());
         thumbImage.setBackgroundColor(Color.GRAY);
         linearLayout.addView(takePhotoButton, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.addView(photoGalleryButton, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
