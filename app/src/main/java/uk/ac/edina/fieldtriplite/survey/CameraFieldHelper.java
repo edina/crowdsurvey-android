@@ -111,7 +111,7 @@ public class CameraFieldHelper implements Observer {
                 Log.d(LOG_TAG, "takePicture result OK");
 
                 Bundle extras = r.getData().getExtras();
-                URI test = (URI)extras.get(MediaStore.EXTRA_OUTPUT);
+
 
 
                 Bitmap imageBitmap = (Bitmap) extras.get("data");

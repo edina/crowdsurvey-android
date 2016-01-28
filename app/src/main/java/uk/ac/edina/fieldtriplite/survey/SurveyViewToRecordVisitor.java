@@ -54,7 +54,7 @@ public class SurveyViewToRecordVisitor implements SurveyVisitor {
         View thumbnailImage = container.findViewById(field.getFormId());
         String pathToImage = thumbnailImage.getTag().toString();
         recordField.setVal(pathToImage);
-
+        model.addRecordField(recordField);
     }
 
     public RecordModel getRecordModel(){
