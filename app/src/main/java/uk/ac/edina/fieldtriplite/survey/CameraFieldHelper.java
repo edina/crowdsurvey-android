@@ -128,9 +128,12 @@ public class CameraFieldHelper implements Observer {
                 Uri selectedImageUri = r.getData().getData();
                 Log.d(LOG_TAG, "Image has been loaded from " + selectedImageUri.getPath());
 
-
-                Bitmap thumbNail = getThumbNail(selectedImageUri);
-                thumbImage.setImageBitmap(thumbNail);
+                try {
+                    Bitmap thumbNail = getThumbNail(selectedImageUri);
+                    thumbImage.setImageBitmap(thumbNail);
+                } catch (Exception e){
+                    Log.d(LOG_TAG, "Unable to create thumbnail");
+                }
 
                 thumbImage.setTag(selectedImageUri.getPath());
             } else if (r.getResultCode() == Activity.RESULT_CANCELED) {

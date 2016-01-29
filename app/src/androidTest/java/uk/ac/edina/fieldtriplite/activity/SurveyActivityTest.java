@@ -3,7 +3,11 @@ package uk.ac.edina.fieldtriplite.activity;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.rule.ActivityTestRule;
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -19,15 +23,20 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.edina.fieldtriplite.FieldTripApplication;
+import uk.ac.edina.fieldtriplite.R;
 import uk.ac.edina.fieldtriplite.matchers.TextInputLayoutHintMatcher;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.service.SurveyService;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.intent.Intents.intending;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -55,7 +64,7 @@ public class SurveyActivityTest {
 
 
     @Rule
-    public ActivityTestRule<SurveyActivity> activityRule = new ActivityTestRule<SurveyActivity>(
+    public IntentsTestRule<SurveyActivity> activityRule = new IntentsTestRule<SurveyActivity>(
             SurveyActivity.class, true, false
     );
 
@@ -89,6 +98,9 @@ public class SurveyActivityTest {
     }
 
 
+
+
+
     @Test
     public void testHintTextOnFirstField() {
         activityRule.launchActivity(new Intent());
@@ -115,6 +127,48 @@ public class SurveyActivityTest {
 
 
     }
+
+    @Test
+    public void testCameraFieldDisplayed() {
+        activityRule.launchActivity(new Intent());
+        List<SurveyField> surveyFields = getSurveyFields();
+        SurveyField cameraField = surveyFields.get(1);
+
+        onView(withId(cameraField.getFormId())).check(matches(isDisplayed()));
+        onView(withText(R.string.take_photo_button)).check(matches(isDisplayed()));
+        onView(withText(R.string.gallery_photo_button)).check(matches(isDisplayed()));
+
+    }
+
+    @Test
+    public void testTakePhotoLaunchingIntent() {
+        activityRule.launchActivity(new Intent());
+
+        Intent resultData = new Intent();
+        Bitmap data = null;
+        resultData.putExtra("data", data);
+        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
+
+        intending(hasAction(MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
+        onView(withText(R.string.take_photo_button)).perform(click());
+
+    }
+
+    @Test
+    public void testChooseFromGalleryLaunchingIntent() {
+        activityRule.launchActivity(new Intent());
+
+        Intent resultData = new Intent();
+        Bitmap data = null;
+        resultData.putExtra("data", data);
+        resultData.setData(Uri.parse( "http://www.test.com"));
+        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
+
+        intending(hasData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI)).respondWith(result);
+        onView(withText(R.string.gallery_photo_button)).perform(click());
+
+    }
+
 
     /**
      * Thread issue on rooted device add a short sleep if required
@@ -170,10 +224,22 @@ public class SurveyActivityTest {
                 add("other");
             }});
 
+            fields.add(fieldOne);
+
+            Map<String, Object> fieldTwo = new HashMap<>();
+            fieldTwo.put("id", "form-image-1");
+            fieldTwo.put("type", "image");
+            fieldTwo.put("label", "Take a photo");
+            fieldTwo.put("required", true);
+            fieldTwo.put("persistent", false);
+            Map<String, Object> propertiesTwo = new HashMap<>();
+            propertiesTwo.put("multi-image", Boolean.FALSE);
+            fieldTwo.put("properties", propertiesTwo);
 
             fieldOne.put("properties", properties);
 
-            fields.add(fieldOne);
+            fields.add(fieldTwo);
+
             surveyModel.setFields(fields);
             callback.onSuccess(surveyModel);
 
