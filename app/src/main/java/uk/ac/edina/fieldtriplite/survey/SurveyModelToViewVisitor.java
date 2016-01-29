@@ -2,6 +2,7 @@ package uk.ac.edina.fieldtriplite.survey;
 
 import android.graphics.Color;
 import android.support.design.widget.TextInputLayout;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyImageField;
 import uk.ac.edina.fieldtriplite.model.SurveyRadioField;
 import uk.ac.edina.fieldtriplite.model.SurveyTextField;
+import uk.ac.edina.fieldtriplite.utils.DisplayUtil;
 import uk.ac.edina.fieldtriplite.validation.FieldValidation;
 
 /**
@@ -64,6 +66,8 @@ public class SurveyModelToViewVisitor implements SurveyVisitor {
     @Override
     public void visit(SurveyImageField field) {
         LinearLayout linearLayout = new LinearLayout(activity);
+        linearLayout.setGravity(Gravity.CENTER_VERTICAL);
+
         Button takePhotoButton = new Button(activity);
         takePhotoButton.setText(activity.getString(R.string.take_photo_button));
         Button photoGalleryButton = new Button(activity);
@@ -74,7 +78,8 @@ public class SurveyModelToViewVisitor implements SurveyVisitor {
         thumbImage.setBackgroundColor(Color.GRAY);
         linearLayout.addView(takePhotoButton, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         linearLayout.addView(photoGalleryButton, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        linearLayout.addView(thumbImage, new LinearLayout.LayoutParams(200, 200));
+        int dpThumbnailSize = DisplayUtil.convertDpToPixel(75, activity);
+        linearLayout.addView(thumbImage, new LinearLayout.LayoutParams(dpThumbnailSize, dpThumbnailSize));
         layoutContainer.addView(linearLayout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
 
