@@ -1,4 +1,5 @@
 package uk.ac.edina.fieldtriplite.model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.strongloop.android.loopback.Model;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 /**
  * Loopback model of Record.
  */
+@JsonIgnoreProperties({ "repository" })
 public class SurveyModel extends Model {
 
     private String id;

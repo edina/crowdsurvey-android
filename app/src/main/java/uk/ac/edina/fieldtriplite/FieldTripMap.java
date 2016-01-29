@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import uk.ac.edina.fieldtriplite.activity.SurveyActivity;
+import uk.ac.edina.fieldtriplite.service.SurveyServiceImpl;
 
 
 public class FieldTripMap extends AppCompatActivity
@@ -64,7 +65,7 @@ public class FieldTripMap extends AppCompatActivity
         webSettings.setLoadsImagesAutomatically(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            this.webView.setWebContentsDebuggingEnabled(true);
+            WebView.setWebContentsDebuggingEnabled(true);
         }
 
 
@@ -119,11 +120,23 @@ public class FieldTripMap extends AppCompatActivity
         // setup toolbar, floating action button drawer and navigation view
        viewInit();
 
-
+        Intent intent = getIntent();
+        Log.d(LOG_TAG, intent.toString());
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            downloadSurvey(intent.getData());
+        }
     }
 
 
+    private void downloadSurvey(Uri uri) {
+        String surveyId = uri.getQueryParameter("surveyId");
+        SurveyServiceImpl surveyService = new SurveyServiceImpl(this);
 
+        if (surveyId != null) {
+            Log.d(LOG_TAG, "Activating surveyId: " + surveyId);
+            surveyService.downloadSurvey(surveyId);
+        }
+    }
 
 
     private void viewInit()

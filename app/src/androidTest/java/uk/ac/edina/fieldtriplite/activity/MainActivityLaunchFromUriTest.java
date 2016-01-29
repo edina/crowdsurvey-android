@@ -8,16 +8,18 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.net.Uri;
 import android.util.Log;
 
+import uk.ac.edina.fieldtriplite.FieldTripMap;
+
 import static java.lang.Thread.*;
 
 
-public class SurveyActivityLaunchFromUriTest extends ActivityInstrumentationTestCase2<SurveyActivity> {
+public class MainActivityLaunchFromUriTest extends ActivityInstrumentationTestCase2<FieldTripMap> {
 
     public static final String LOG_TAG = "LaunchFromUriTest";
     private Instrumentation instrumentation;
 
-    public SurveyActivityLaunchFromUriTest() {
-        super(SurveyActivity.class);
+    public MainActivityLaunchFromUriTest() {
+        super(FieldTripMap.class);
     }
 
     @Override
@@ -35,7 +37,7 @@ public class SurveyActivityLaunchFromUriTest extends ActivityInstrumentationTest
 
     public void testLaunchFromSurvey() {
         ActivityMonitor monitor =
-                instrumentation.addMonitor(SurveyActivity.class.getName(), null, false);
+                instrumentation.addMonitor(FieldTripMap.class.getName(), null, false);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse("crowdsurvey://uk.ac.edina.crowdsurvey?surveyId=566ed9b30351d817555158cd");

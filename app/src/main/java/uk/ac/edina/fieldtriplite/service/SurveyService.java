@@ -1,7 +1,5 @@
 package uk.ac.edina.fieldtriplite.service;
 
-import android.app.Activity;
-
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
@@ -11,6 +9,8 @@ import uk.ac.edina.fieldtriplite.model.SurveyModel;
  */
 public interface SurveyService {
 
-    void getCustomSurvey(Activity context, ObjectCallback<SurveyModel> callback);
-    void getCustomSurvey(Activity context, String surveyId, ObjectCallback<SurveyModel> callback);
+    void getCustomSurvey(ObjectCallback<SurveyModel> callback);
+    void getCustomSurvey(String surveyId, ObjectCallback<SurveyModel> callback);
+    void downloadSurvey(String surveyId);
+    void activateSurvey(String surveyId);
 }
