@@ -2,6 +2,7 @@ package uk.ac.edina.fieldtriplite.activity;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -28,6 +29,7 @@ import uk.ac.edina.fieldtriplite.matchers.TextInputLayoutHintMatcher;
 import uk.ac.edina.fieldtriplite.model.SurveyField;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
 import uk.ac.edina.fieldtriplite.service.SurveyService;
+import uk.ac.edina.fieldtriplite.service.SurveyServiceBase;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -75,7 +77,7 @@ public class SurveyActivityTest {
         FieldTripApplication app = (FieldTripApplication) instrumentation.getTargetContext()
                 .getApplicationContext();
 
-        app.setSurveyService(new SurveyServiceMock());
+        app.setSurveyService(new SurveyServiceMock(app.getApplicationContext()));
 
     }
 
@@ -193,15 +195,19 @@ public class SurveyActivityTest {
         return surveyFields;
     }
 
-    class SurveyServiceMock implements SurveyService {
+    class SurveyServiceMock extends SurveyServiceBase {
 
-        @Override
-        public void getCustomSurvey(Activity context, ObjectCallback<SurveyModel> callback) {
-            getCustomSurvey(context, "", callback);
+        public SurveyServiceMock(Context context) {
+            super(context);
         }
 
         @Override
-        public void getCustomSurvey(Activity context, String surveyId, ObjectCallback<SurveyModel> callback) {
+        public void getCustomSurvey(ObjectCallback<SurveyModel> callback) {
+            getCustomSurvey("", callback);
+        }
+
+        @Override
+        public void getCustomSurvey(String surveyId, ObjectCallback<SurveyModel> callback) {
 
             SurveyModel surveyModel = new SurveyModel();
             List<Map<String, Object>> fields = new ArrayList<>();
@@ -243,6 +249,16 @@ public class SurveyActivityTest {
             surveyModel.setFields(fields);
             callback.onSuccess(surveyModel);
 
+        }
+
+        @Override
+        public void downloadSurvey(String surveyId) {
+            return;
+        }
+
+        @Override
+        public void activateSurvey(String surveyId) {
+            return;
         }
     }
 }

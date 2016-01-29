@@ -13,7 +13,10 @@ import org.junit.Test;
 
 import uk.ac.edina.fieldtriplite.activity.SurveyActivity;
 import uk.ac.edina.fieldtriplite.document.Record;
+import uk.ac.edina.fieldtriplite.document.Survey;
 import uk.ac.edina.fieldtriplite.model.RecordModel;
+import uk.ac.edina.fieldtriplite.model.SurveyModel;
+
 import static org.junit.Assert.*;
 
 /**
@@ -82,6 +85,25 @@ public class DatabaseCRUDTest {
             assertNotNull(retrievedRecord);
 
             assertEquals(record.getId(), retrievedRecord.getId());
+        } catch (CouchbaseLiteException e) {
+            fail(e.getMessage());
+        }
+    }
+
+
+    /**
+     * Test storing a survey in the database
+     */
+    @Test
+    public void testDatabasePutSurvey() {
+
+        FieldTripApplication application = (FieldTripApplication)activityRule.getActivity().getApplicationContext();
+        Database database = application.getDatabase();
+        SurveyModel survey = new SurveyModel();
+
+        try {
+            Document document = Survey.putSurvey(database, survey);
+            assertNotNull(document);
         } catch (CouchbaseLiteException e) {
             fail(e.getMessage());
         }

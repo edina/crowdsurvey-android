@@ -20,17 +20,23 @@ public class FieldTripApplication extends Application {
     public static final String LOG_TAG = "ApplicationContext" ;
     // Couchbase properties
     private static final String DATABASE_NAME = "crowdsurveydb";
+    public static final String PREFS_NAME = "croudsurvey.preferences";
+
     private Database database;
     private Manager manager;
-    private SurveyService surveyService = new SurveyServiceImpl();
+    private SurveyService surveyService;
+
+    public FieldTripApplication() {
+        surveyService = new SurveyServiceImpl(this);
+    }
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         initDatabase();
-
     }
+
 
     /**
      * Initialize the couchbase database
