@@ -51,8 +51,8 @@ public class SurveyModelToViewVisitor implements SurveyVisitor {
 
         dynamic.addView(dynamicEditText, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         layoutContainer.addView(dynamic, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        fieldValidation.maxNumberOfChars(dynamic, maxChars, dynamicEditText);
+        String errorMessage =activity.getString(R.string.string_too_long);
+        fieldValidation.maxNumberOfChars(dynamic, maxChars, dynamicEditText, errorMessage);
 
     }
 

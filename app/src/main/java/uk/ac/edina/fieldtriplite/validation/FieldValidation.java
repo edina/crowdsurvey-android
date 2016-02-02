@@ -10,14 +10,14 @@ import android.widget.EditText;
  */
 public class FieldValidation {
 
-    public void maxNumberOfChars(final TextInputLayout dynamic, final Integer maxChars, final EditText dynamicEditText) {
+    public void maxNumberOfChars(final TextInputLayout dynamic, final Integer maxChars, final EditText dynamicEditText, final String errorMessage) {
         dynamicEditText.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
                 String textToValidate = dynamicEditText.getText().toString();
                 if (textToValidate.length() > maxChars) {
-                    //// TODO: 07/01/2016 make error msg external
-                    dynamic.setError("Too Long only " + maxChars + " allowed");
+
+                    dynamic.setError(errorMessage + " " + maxChars );
                 }
 
             }

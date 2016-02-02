@@ -1,5 +1,6 @@
 package uk.ac.edina.fieldtriplite.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -93,6 +94,7 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void saveRecord() {
+
 
         SurveyViewToRecordVisitor surveyViewToRecordVisitor = new SurveyViewToRecordVisitor(container);
 
