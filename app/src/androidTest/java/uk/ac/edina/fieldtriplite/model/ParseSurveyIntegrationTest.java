@@ -26,6 +26,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
     RestAdapter adapter;
 
     private static final String url = BuildConfig.API_URL;
+    private static final String TEST_SURVEY_ID = "566ed9b30351d817555158cd";
     SurveyModel surveyModel;
 
 
@@ -67,7 +68,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
             public void run() {
                 SurveyModelRepository repository = adapter.createRepository(SurveyModelRepository.class);
 
-                repository.findById("1", new ObjectCallback<SurveyModel>() {
+                repository.findById(TEST_SURVEY_ID, new ObjectCallback<SurveyModel>() {
                     @Override
                     public void onSuccess(SurveyModel object) {
                         Log.d("SurveyModel", object.toString());
