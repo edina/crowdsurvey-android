@@ -12,8 +12,22 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    Properties props = new Properties()
+    try {
+        props.load(file('crowdsurvey.properties').newDataInputStream())
+    } catch (Exception ex) {
+        throw new GradleException("Missing crowdsurvey.properties, check the crowdsurvey.properties.sample file.");
+    }
+
     buildTypes {
+        debug {
+            buildConfigField "String", "API_URL", "\"${props.getProperty("loopbackApiUrl")}\""
+
+        }
         release {
+            buildConfigField "String", "API_URL", "\"${props.getProperty("loopbackApiUrl")}\""
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

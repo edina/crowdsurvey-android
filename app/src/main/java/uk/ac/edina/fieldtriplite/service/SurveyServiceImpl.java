@@ -9,6 +9,7 @@ import com.couchbase.lite.Database;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
+import uk.ac.edina.fieldtriplite.BuildConfig;
 import uk.ac.edina.fieldtriplite.FieldTripApplication;
 import uk.ac.edina.fieldtriplite.document.Survey;
 import uk.ac.edina.fieldtriplite.model.SurveyModel;
@@ -21,7 +22,7 @@ public class SurveyServiceImpl extends SurveyServiceBase {
 
     private static final String LOG_TAG = "SurveyService";
     private static String DEFAULT_SURVEY = "566ed9b30351d817555158cd";
-    private static String emulatorUrl =  "http://129.215.169.232:3001/api";
+    private static final String url = BuildConfig.API_URL;
 
     public SurveyServiceImpl(Context context) {
         super(context);
@@ -36,7 +37,7 @@ public class SurveyServiceImpl extends SurveyServiceBase {
     }
 
     public void downloadSurvey(String surveyId) {
-        RestAdapter adapter = new RestAdapter(context, emulatorUrl);
+        RestAdapter adapter = new RestAdapter(context, url);
         SurveyModelRepository repository = adapter.createRepository(SurveyModelRepository.class);
         final Database database =  ((FieldTripApplication)context.getApplicationContext()).getDatabase();
 
@@ -70,7 +71,7 @@ public class SurveyServiceImpl extends SurveyServiceBase {
     }
 
     private void liveCall(String surveyId, ObjectCallback<SurveyModel> callback) {
-        RestAdapter adapter = new RestAdapter(context, emulatorUrl);
+        RestAdapter adapter = new RestAdapter(context, url);
         SurveyModelRepository repository = adapter.createRepository(SurveyModelRepository.class);
         repository.findById(surveyId, callback);
     }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import uk.ac.edina.fieldtriplite.BuildConfig;
 import uk.ac.edina.fieldtriplite.FieldTripMap;
 
 /**
@@ -24,9 +25,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
 
     RestAdapter adapter;
 
-    //String nativeUrl = "http://dlib-rainbow.edina.ac.uk:3000/api";
-    String emulatorUrl = "http://129.215.169.232:3001/api";
-    String emulatorToLocalHost = "http://10.0.2.2:3000/api";
+    private static final String url = BuildConfig.API_URL;
     SurveyModel surveyModel;
 
 
@@ -54,8 +53,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
 
         mockContext = fieldTripMapActivity.getApplicationContext();
         assertNotNull(mockContext);
-        adapter = new RestAdapter(
-                mockContext, emulatorToLocalHost);
+        adapter = new RestAdapter(mockContext, url);
 
     }
 
