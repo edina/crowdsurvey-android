@@ -106,7 +106,7 @@ public class ParseSurveyIntegrationTest extends ActivityInstrumentationTestCase2
         assertEquals("form-text-1", surveyField1.getId());
 
         SurveyFieldProperties surveyFieldProperties = surveyField1.getSurveyFieldProperties();
-        assertEquals("30", surveyFieldProperties.getMaxChars());
+        assertEquals(new Integer(30), surveyFieldProperties.getMaxChars());
         assertEquals("Place default text here (if any)", surveyFieldProperties.getPlaceholder());
         assertEquals("record", surveyFieldProperties.getPrefix());
         assertEquals(0, signal.getCount());
