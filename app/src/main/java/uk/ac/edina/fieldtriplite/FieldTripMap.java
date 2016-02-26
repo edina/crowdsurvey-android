@@ -1,15 +1,17 @@
 package uk.ac.edina.fieldtriplite;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,9 +21,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.views.MapView;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,10 +40,8 @@ public class FieldTripMap extends AppCompatActivity
 
 
     public static final String LOG_TAG = "FieldtripMap Activity" ;
-    WebView webView = null ;
-    WebViewLocationAPI locationAPI = null ;
-    private WebViewClient webViewClient = null ;
-
+    private static final int PERMISSIONS_LOCATION = 0;
+    MapView mv;
 
     //Request codes for child activities
     private int REQUEST_IMAGE_CAPTURE = 100;
@@ -48,74 +49,40 @@ public class FieldTripMap extends AppCompatActivity
 
     private String APP_FOLDER_NAME = "CROWN_SURVEY";
 
+    @SuppressWarnings("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_field_trip_map);
-        this.webView  = (WebView)findViewById(R.id.web);
-        this.locationAPI = new WebViewLocationAPI(this.webView);
 
 
-        WebSettings webSettings = this.webView.getSettings() ;
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setAllowContentAccess(true);
-        webSettings.setBlockNetworkImage(false);
-        webSettings.setUseWideViewPort(true);
-        webSettings.setLoadsImagesAutomatically(true);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(true);
+        mv = (MapView) findViewById(R.id.mapview);
+
+        mv.setStyle(this.getString(R.string.styleUrl));
+        mv.setCenterCoordinate(new LatLng(0, 0));
+
+        // Show user location (purposely not in follow mode)
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_LOCATION);
+        } else {
+            mv.setMyLocationEnabled(true);
         }
 
-
-        /*
-        *  set the Javascript interface to the instance of WebViewLcoationAPI and set the
-        *  name for this intefeace used in the WebView to "NativeLocationAPI"
-        *  so in the Javascript you can call the method requestLocationFix() in WebViewLocationAPI class
-        *  with NativeLocationAPI.onLocationFix()
-        *
-        */
-
-        this.webView.addJavascriptInterface(this.locationAPI, "NativeLocationAPI");
-
-
-        // we only want to start usimg native location API once the map html has loaded
-        // otherwise we will end up calling Javascript callbacks before the JS is loaded into webview
-        // the web view client allows us to capture the onPageFinished event where we can kick off location requests
-        this.webViewClient =    new WebViewClient() {
-            @Override
-
-            public void onPageFinished(WebView view, String url) {
-
-                if("file:///android_asset/html/map.html".equals(url))
-                {
-                    Log.d(LOG_TAG, " LOADED map.html") ;
-                    locationAPI.setCallbackScriptLoaded(true);
-                    locationAPI.isCallbackScriptLoaded();
-                    // request 3 updates initially to get more accurate initial fix
-                    locationAPI.requestLocationFix(3);
+//		mv.loadFromGeoJSONURL("https://gist.githubusercontent.com/tmcw/10307131/raw/21c0a20312a2833afeee3b46028c3ed0e9756d4c/map.geojson");
+        mv.addMarker(new MarkerOptions().title("Edinburgh").snippet("Scotland").position(new LatLng(55.94629, -3.20777)));
+        mv.addMarker(new MarkerOptions().title("Stockholm").snippet("Sweden").position(new LatLng(59.32995, 18.06461)));
+        mv.addMarker(new MarkerOptions().title("Prague").snippet("Czech Republic").position(new LatLng(50.08734, 14.42112)));
+        mv.addMarker(new MarkerOptions().title("Athens").snippet("Greece").position(new LatLng(37.97885, 23.71399)));
+        mv.addMarker(new MarkerOptions().title("Tokyo").snippet("Japan").position(new LatLng(35.70247, 139.71588)));
+        mv.addMarker(new MarkerOptions().title("Ayacucho").snippet("Peru").position(new LatLng(-13.16658, -74.21608)));
+        mv.addMarker(new MarkerOptions().title("Nairobi").snippet("Kenya").position(new LatLng(-1.26676, 36.83372)));
+        mv.addMarker(new MarkerOptions().title("Canberra").snippet("Australia").position(new LatLng(-35.30952, 149.12430)));
 
 
-                }
-                else
-                {
-                    Log.d(LOG_TAG, "onPageFinished:" + url ) ;
-                }
-
-            }
-        };
-
-        this.webView.setWebViewClient(this.webViewClient) ;
-
-        // load the html page (and linked JS files) asynchronously
-        // the onPageFinished callback above get called when the oage is loaded into the WebView
-        this.webView.post(new Runnable() {
-            @Override
-            public void run() {
-                webView.loadUrl("file:///android_asset/html/map.html");
-            }
-        });
+        mv.onCreate(savedInstanceState);
 
         // setup toolbar, floating action button drawer and navigation view
        viewInit();

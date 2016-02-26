@@ -62,7 +62,7 @@ public class FieldTripMapTest extends ActivityInstrumentationTestCase2<FieldTrip
         // flags = {@link Intent#FLAG_ACTIVITY_NEW_TASK}
         // All other fields are null or empty.
         mFieldTripMapActivity = getActivity();
-        mWebView = (WebView) mFieldTripMapActivity.findViewById(R.id.web) ;
+
 
         assertNotNull("mFieldTripMapActivity is not null", mFieldTripMapActivity);
         assertNotNull("mWebView is not null", mWebView);
