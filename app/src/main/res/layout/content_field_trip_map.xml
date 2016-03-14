@@ -7,6 +7,13 @@
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     tools:showIn="@layout/app_bar_field_trip_map" tools:activity=".FieldTripMap">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/setLocationMarker"
+        android:src="@drawable/ic_action_my_location"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <com.mapbox.mapboxsdk.views.MapView
         android:id="@+id/mapview"
@@ -14,5 +21,7 @@
         android:layout_height="match_parent"
         mapbox:access_token="@string/testAccessToken"
         />
+
+
 
 </RelativeLayout>
