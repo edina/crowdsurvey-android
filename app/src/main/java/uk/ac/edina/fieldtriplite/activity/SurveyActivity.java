@@ -11,12 +11,14 @@ import android.widget.LinearLayout;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Document;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 
 import java.util.List;
 import java.util.Observable;
 
 import uk.ac.edina.fieldtriplite.FieldTripApplication;
+import uk.ac.edina.fieldtriplite.FieldTripMap;
 import uk.ac.edina.fieldtriplite.R;
 import uk.ac.edina.fieldtriplite.document.Record;
 import uk.ac.edina.fieldtriplite.model.RecordModel;
@@ -116,7 +118,12 @@ public class SurveyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_survey);
+
+        Intent myIntent = getIntent(); // gets the previously created intent
+        LatLng  latLng = (LatLng)myIntent.getParcelableExtra(FieldTripMap.LAT_LNG_KEY);
+
         container = (LinearLayout)findViewById(R.id.viewToAddTo);
         FieldTripApplication application = (FieldTripApplication)getApplicationContext();
         application.getSurveyService().getCustomSurvey(new SurveyModelCallBack());

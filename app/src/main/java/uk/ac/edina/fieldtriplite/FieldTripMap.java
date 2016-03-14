@@ -40,6 +40,7 @@ public class FieldTripMap extends AppCompatActivity
 
 
     public static final String LOG_TAG = "FieldtripMap Activity" ;
+    public static final String LAT_LNG_KEY = "latlngkey" ;
     private static final int PERMISSIONS_LOCATION = 0;
     MapView mv;
 
@@ -113,11 +114,13 @@ public class FieldTripMap extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                LatLng latLng = FieldTripMap.this.mv.getLatLng();
                 Intent customSurveyForm = new Intent(FieldTripMap.this.getBaseContext(), SurveyActivity.class);
+                customSurveyForm.putExtra(LAT_LNG_KEY, latLng);
                 FieldTripMap.this.startActivity(customSurveyForm);
             }
         });
