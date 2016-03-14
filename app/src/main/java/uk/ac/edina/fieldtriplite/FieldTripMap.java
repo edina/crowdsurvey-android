@@ -133,6 +133,63 @@ public class FieldTripMap extends AppCompatActivity
 
     }
 
+    /**
+     * Dispatch onStart() to all fragments.  Ensure any created loaders are
+     * now started.
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mv.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mv.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mv.onDestroy();
+    }
+
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.  This means
+     * that in some cases the previous state may still be saved, not allowing
+     * fragment transactions that modify the state.  To correctly interact
+     * with fragments in their proper state, you should instead override
+     * {@link #onResumeFragments()}.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mv.onResume();
+    }
+
+    /**
+     * Dispatch onPause() to fragments.
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mv.onPause();
+    }
+
+    /**
+     * Save all appropriate fragment state.
+     *
+     * @param outState outState
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mv.onSaveInstanceState(outState);
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
