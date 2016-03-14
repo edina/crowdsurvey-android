@@ -15,6 +15,6 @@
     <!-- Access Token -->
     <string name="testAccessToken" translatable="false">pk.eyJ1IjoiYmxlZWdlIiwiYSI6IkRGLTFPU00ifQ.qJpq3jytAL9A-z_tkNypqg</string>
     <!-- Style and source url -->
-    <string name="styleUrl" translatable="false">http://129.215.169.232/bright-v8.json</string>
+    <string name="styleUrl" translatable="false">http://129.215.169.232/bright-v8-3.json</string>
 </resources>
 

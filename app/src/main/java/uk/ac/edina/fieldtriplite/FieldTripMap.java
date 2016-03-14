@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -23,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.constants.Style;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.views.MapView;
 
@@ -60,15 +60,16 @@ public class FieldTripMap extends AppCompatActivity
 
         mv = (MapView) findViewById(R.id.mapview);
 
-        mv.setStyle(this.getString(R.string.styleUrl));
-        mv.setCenterCoordinate(new LatLng(0, 0));
+        //mv.setStyle(this.getString(R.string.styleUrl));
+        mv.setStyle(Style.MAPBOX_STREETS);
+        //mv.setCenterCoordinate(new LatLng(0, 0));
 
         // Show user location (purposely not in follow mode)
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
                 (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_LOCATION);
         } else {
-            mv.setMyLocationEnabled(true);
+         //   mv.setMyLocationEnabled(true);
         }
 
 //		mv.loadFromGeoJSONURL("https://gist.githubusercontent.com/tmcw/10307131/raw/21c0a20312a2833afeee3b46028c3ed0e9756d4c/map.geojson");
@@ -115,8 +116,9 @@ public class FieldTripMap extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                Intent customSurveyForm = new Intent(FieldTripMap.this.getBaseContext(), SurveyActivity.class);
+                FieldTripMap.this.startActivity(customSurveyForm);
             }
         });
 
