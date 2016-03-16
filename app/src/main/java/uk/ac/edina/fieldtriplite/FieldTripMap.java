@@ -22,7 +22,15 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.mapbox.mapboxsdk.constants.Style;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.offline.OfflineManager;
+import com.mapbox.mapboxsdk.offline.OfflineRegion;
+import com.mapbox.mapboxsdk.offline.OfflineRegionDefinition;
+import com.mapbox.mapboxsdk.offline.OfflineRegionError;
+import com.mapbox.mapboxsdk.offline.OfflineRegionStatus;
+import com.mapbox.mapboxsdk.offline.OfflineTilePyramidRegionDefinition;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +79,8 @@ public class FieldTripMap extends AppCompatActivity
          //   mv.setMyLocationEnabled(true);
         }
 
+        loadOfflineMap();
+
 //		mv.loadFromGeoJSONURL("https://gist.githubusercontent.com/tmcw/10307131/raw/21c0a20312a2833afeee3b46028c3ed0e9756d4c/map.geojson");
         /*
         mv.addMarker(new MarkerOptions().title("Edinburgh").snippet("Scotland").position(new LatLng(55.94629, -3.20777)));
@@ -93,6 +103,70 @@ public class FieldTripMap extends AppCompatActivity
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             downloadSurvey(intent.getData());
         }
+    }
+
+    private void loadOfflineMap() {
+
+
+        // Set up the OfflineManager
+        OfflineManager mOfflineManager = OfflineManager.getInstance(this);
+        mOfflineManager.setAccessToken("no required");
+
+// Definition
+        String styleURL = this.getString(R.string.styleUrl);
+
+
+        //north east
+        LatLng nw = new LatLng(55.6664181, -3.2076422);
+        LatLng ne= new LatLng(55.6664181,-3.1641578);
+        LatLng se = new LatLng(55.637283,-3.1641578);
+        LatLng sw = new LatLng(55.637283, -3.2076422);
+
+        LatLngBounds bounds = new LatLngBounds.Builder().include(nw).include(ne).include(se).include(sw).include(ne).build();
+        double minZoom = 1;
+        double maxZoom = 14;
+        float pixelRatio = this.getResources().getDisplayMetrics().density;
+        OfflineRegionDefinition definition = new OfflineTilePyramidRegionDefinition(
+                styleURL, bounds, minZoom, maxZoom, pixelRatio);
+;
+// Create region
+        mOfflineManager.createOfflineRegion(definition, new byte[0],
+                new OfflineManager.CreateOfflineRegionCallback() {
+                    @Override
+                    public void onCreate(OfflineRegion offlineRegion) {
+                        Log.d(LOG_TAG, "Offline region created: " + offlineRegion);
+                        // Set an observer
+                        offlineRegion.setObserver(new OfflineRegion.OfflineRegionObserver() {
+                            @Override
+                            public void onStatusChanged(OfflineRegionStatus status) {
+                                // Status changed
+                            }
+
+                            @Override
+                            public void onError(OfflineRegionError error) {
+                                Log.e(LOG_TAG, "Error: " + error.getMessage());
+                            }
+
+                            @Override
+                            public void mapboxTileCountLimitExceeded(long limit) {
+
+                            }
+                        });
+                        // Trigger the download
+                        offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE);
+
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e(LOG_TAG, "Error: " + error);
+                    }
+                });
+
+
+
+
+
     }
 
 
