@@ -34,6 +34,7 @@
                 <data android:scheme="crowdsurvey"/>
                 <data android:host="uk.ac.edina.crowdsurvey"/>
             </intent-filter>
+
         </activity>
 
         <meta-data
@@ -41,6 +42,8 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".activity.SurveyActivity" />
+
+        <service android:name="com.mapbox.mapboxsdk.telemetry.TelemetryService" />
     </application>
 
 </manifest>

@@ -21,10 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.constants.Style;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.views.MapView;
+import com.mapbox.mapboxsdk.maps.MapView;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,6 +72,7 @@ public class FieldTripMap extends AppCompatActivity
         }
 
 //		mv.loadFromGeoJSONURL("https://gist.githubusercontent.com/tmcw/10307131/raw/21c0a20312a2833afeee3b46028c3ed0e9756d4c/map.geojson");
+        /*
         mv.addMarker(new MarkerOptions().title("Edinburgh").snippet("Scotland").position(new LatLng(55.94629, -3.20777)));
         mv.addMarker(new MarkerOptions().title("Stockholm").snippet("Sweden").position(new LatLng(59.32995, 18.06461)));
         mv.addMarker(new MarkerOptions().title("Prague").snippet("Czech Republic").position(new LatLng(50.08734, 14.42112)));
@@ -83,7 +82,7 @@ public class FieldTripMap extends AppCompatActivity
         mv.addMarker(new MarkerOptions().title("Nairobi").snippet("Kenya").position(new LatLng(-1.26676, 36.83372)));
         mv.addMarker(new MarkerOptions().title("Canberra").snippet("Australia").position(new LatLng(-35.30952, 149.12430)));
 
-
+        */
         mv.onCreate(savedInstanceState);
 
         // setup toolbar, floating action button drawer and navigation view
@@ -118,10 +117,11 @@ public class FieldTripMap extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 LatLng latLng = FieldTripMap.this.mv.getLatLng();
                 Intent customSurveyForm = new Intent(FieldTripMap.this.getBaseContext(), SurveyActivity.class);
                 customSurveyForm.putExtra(LAT_LNG_KEY, latLng);
-                FieldTripMap.this.startActivity(customSurveyForm);
+                FieldTripMap.this.startActivity(customSurveyForm);*/
             }
         });
 
